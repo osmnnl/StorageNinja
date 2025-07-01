@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "StorageNinja",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Chrome Extension to manage Local Storage, Session Storage, and Cookies for the active tab",
     "permissions": [
         "activeTab",
