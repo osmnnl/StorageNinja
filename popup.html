@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StorageNinja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sf': ['-apple-system', 'BlinkMacSystemFont', 'San Francisco', 'Helvetica Neue', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 via-white to-gray-50 font-sf">
+    <!-- Background with subtle glassmorphism -->
+    <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-gray-50/30 to-slate-100/20 backdrop-blur-sm"></div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 px-1 py-2">
+
+        <!-- Main View -->
+        <div id="main-view">
+            <!-- Minimal Header -->
+            <div class="header text-center animate-fade-in">
+                <div class="app-title-group-center">
+                    <h1 class="app-title">Storage <span style="color: #FBBF24;">Ninja</span></h1>
+                    <p class="app-subtitle">Copy, paste, and manage browser storage data effortlessly</p>
+                </div>
+            </div>
+
+            <!-- Storage Lines Grid -->
+            <div class="storage-grid">
+                <!-- Local Storage Card -->
+                <div class="storage-line-card glass-card-minimal animate-scale-in" style="animation-delay: 0.05s;">
+                    <div class="storage-line-content">
+                        <span class="storage-line-text">
+                            (<span id="localStorage-count">0</span>) Local Storage
+                        </span>
+                        <div class="storage-line-actions">
+                            <button id="localStorage-copy" class="action-btn-mini copy-btn"
+                                title="Copy storage data in JSON format">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button id="localStorage-paste" class="action-btn-mini paste-btn"
+                                title="Paste JSON data from clipboard to storage">
+                                <i class="fas fa-paste"></i>
+                            </button>
+                            <button id="localStorage-clear" class="action-btn-mini clear-btn"
+                                title="Clear all storage data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button id="localStorage-details" class="action-btn-mini details-btn"
+                                title="Detailed view and editing">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Storage Card -->
+                <div class="storage-line-card glass-card-minimal animate-scale-in" style="animation-delay: 0.1s;">
+                    <div class="storage-line-content">
+                        <span class="storage-line-text">
+                            (<span id="sessionStorage-count">0</span>) Session Storage
+                        </span>
+                        <div class="storage-line-actions">
+                            <button id="sessionStorage-copy" class="action-btn-mini copy-btn"
+                                title="Copy storage data in JSON format">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button id="sessionStorage-paste" class="action-btn-mini paste-btn"
+                                title="Paste JSON data from clipboard to storage">
+                                <i class="fas fa-paste"></i>
+                            </button>
+                            <button id="sessionStorage-clear" class="action-btn-mini clear-btn"
+                                title="Clear all storage data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button id="sessionStorage-details" class="action-btn-mini details-btn"
+                                title="Detailed view and editing">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cookies Card -->
+                <div class="storage-line-card glass-card-minimal animate-scale-in" style="animation-delay: 0.15s;">
+                    <div class="storage-line-content">
+                        <span class="storage-line-text">
+                            (<span id="cookies-count">0</span>) Cookies
+                        </span>
+                        <div class="storage-line-actions">
+                            <button id="cookies-copy" class="action-btn-mini copy-btn"
+                                title="Copy cookie data in JSON format">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button id="cookies-paste" class="action-btn-mini paste-btn"
+                                title="Paste JSON data from clipboard to cookies">
+                                <i class="fas fa-paste"></i>
+                            </button>
+                            <button id="cookies-clear" class="action-btn-mini clear-btn" title="Clear all cookies">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button id="cookies-details" class="action-btn-mini details-btn"
+                                title="Detailed view and editing">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer with Contact Info -->
+            <div class="contact-footer mt-4 text-center">
+                <span class="contact-text">Contact: osmnnldev@gmail.com</span>
+            </div>
+        </div>
+
+        <!-- Details View (Initially Hidden) -->
+        <div id="details-view" class="hidden p-4" style="display: none;">
+            <button id="back-to-main" class="back-button mb-4">
+                <i class="fas fa-arrow-left"></i> Back to Main
+            </button>
+            <h2 id="details-title" class="text-sm font-bold mb-2 text-gray-800"></h2>
+            <div id="add-item-form" class="mb-4"></div>
+            <div id="items-list" class="space-y-2">
+                <!-- Items will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-notification" class="toast-notification"></div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

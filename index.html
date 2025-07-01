@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StorageNinja - Chrome Extension</title>
+    <meta name="description"
+        content="Storage management tool for Chrome browser - Easily manage Local Storage, Session Storage & Cookies">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Hero Section -->
+    <div class="gradient-bg min-h-screen">
+        <div class="container mx-auto px-6 py-16">
+            <!-- Navigation -->
+            <nav class="flex flex-col sm:flex-row justify-between items-center mb-16 gap-4">
+                <div class="flex items-center space-x-3">
+                    <img src="icons/icon.png" alt="StorageNinja" class="w-10 h-10 rounded-lg">
+                    <span class="text-white text-xl font-bold">Storage <span class="text-yellow-300">Ninja</span></span>
+                </div>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a href="#features" class="text-white hover:text-gray-200 transition-colors">Features</a>
+                    <a href="#install" class="text-white hover:text-gray-200 transition-colors">Install</a>
+                    <a href="privacy-policy.html" class="text-white hover:text-gray-200 transition-colors">Privacy</a>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="text-center text-white">
+                <h1
+                    class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                    <img src="icons/icon.png" alt="StorageNinja" class="w-16 h-16">
+                    <span>Storage <span class="text-yellow-300">Ninja</span></span>
+                </h1>
+                <p class="text-lg sm:text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto px-4">
+                    Powerful Chrome extension to manage Local Storage, Session Storage, and Cookies with ease
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="https://github.com/osmnnl/StorageNinja"
+                        class="w-full sm:w-auto text-center bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        <i class="fab fa-github mr-2"></i>View on GitHub
+                    </a>
+                    <a href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
+                        target="_blank"
+                        class="w-full sm:w-auto text-center bg-yellow-400 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Install Extension
+                    </a>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-3 gap-8 mt-16" id="features">
+                <div class="glass-card rounded-xl p-6 text-white">
+                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-hard-drive text-green-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Local Storage</h3>
+                    <p class="text-gray-200">View, copy, paste, and manage persistent local storage data on any website
+                    </p>
+                </div>
+
+                <div class="glass-card rounded-xl p-6 text-white">
+                    <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-clock text-yellow-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Session Storage</h3>
+                    <p class="text-gray-200">Manage session-based storage data with full control and JSON support</p>
+                </div>
+
+                <div class="glass-card rounded-xl p-6 text-white">
+                    <div class="w-12 h-12 bg-pink-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cookie-bite text-pink-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Cookies</h3>
+                    <p class="text-gray-200">Handle HTTP cookies with detailed attributes and secure operations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Why Choose StorageNinja?</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    A comprehensive solution for developers and power users to manage browser storage efficiently
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-copy text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">JSON Support</h3>
+                    <p class="text-gray-600 text-sm">Copy and paste data in JSON format between different storage types
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Safe Operations</h3>
+                    <p class="text-gray-600 text-sm">Confirmation dialogs and secure handling of sensitive data</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-eye text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Detailed View</h3>
+                    <p class="text-gray-600 text-sm">Individual key-value management with editing capabilities</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rocket text-orange-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Modern UI</h3>
+                    <p class="text-gray-600 text-sm">Clean, intuitive interface designed with Tailwind CSS</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Installation Section -->
+    <div class="py-16 bg-gray-50" id="install">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Easy Installation</h2>
+                <p class="text-gray-600">Get started with StorageNinja in just a few steps</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Chrome Web Store -->
+                    <div class="bg-white rounded-lg p-6 shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fab fa-chrome text-blue-600 mr-3"></i>
+                            Chrome Web Store
+                        </h3>
+                        <p class="text-gray-600 mb-4">🎉 StorageNinja is now live! Install directly from Chrome Web
+                            Store with just one click.</p>
+                        <a href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
+                            target="_blank"
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors inline-block text-center">
+                            <i class="fas fa-download mr-2"></i>Install Now
+                        </a>
+                    </div>
+
+                    <!-- Manual Installation -->
+                    <div class="bg-white rounded-lg p-6 shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-code text-green-600 mr-3"></i>
+                            Developer Mode
+                        </h3>
+                        <p class="text-gray-600 mb-4">Install manually for testing and development purposes.</p>
+                        <a href="https://github.com/osmnnl/StorageNinja#installation"
+                            class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors inline-block text-center">
+                            View Instructions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="https://github.com/osmnnl/StorageNinja" class="hover:text-gray-300 transition-colors">
+                    <i class="fab fa-github text-2xl"></i>
+                </a>
+                <a href="mailto:osmnnldev@gmail.com" class="hover:text-gray-300 transition-colors">
+                    <i class="fas fa-envelope text-2xl"></i>
+                </a>
+            </div>
+            <p class="text-gray-400 mb-2">Storage <span class="text-yellow-300">Ninja</span> - Chrome Extension</p>
+            <p class="text-gray-500 text-sm">
+                Made with ❤️ by <a href="https://github.com/osmnnl" class="text-white hover:text-gray-300">osmnnl</a>
+            </p>
+            <div class="mt-4 text-sm text-gray-500">
+                <a href="privacy-policy.html" class="hover:text-gray-300">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

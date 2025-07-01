@@ -1,0 +1,703 @@
+/* Universal Box Sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 1px;
+    padding: 1px;
+}
+
+/* All width is now controlled by popup.js */
+
+html,
+body {
+    transition: width 0.2s ease-in-out;
+    /* Smooth width transition */
+}
+
+/* StorageNinja - Minimal Modern Design */
+
+/* Minimal Glassmorphism */
+.glass-card-minimal {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.glass-card-minimal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Single Column Line Layout */
+.storage-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    padding: 0;
+}
+
+/* Line Card Layout for 300px */
+.storage-line-card {
+    padding: 0 12px;
+    /* Horizontal padding only */
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 48px;
+    /* Consistent height for all cards */
+    border-radius: 8px;
+    display: flex;
+    /* Make the card a flex container */
+    align-items: center;
+    /* Vertically center everything inside */
+}
+
+.storage-line-content {
+    display: flex;
+    align-items: center;
+    /* Also align items here for consistency */
+    width: 100%;
+    gap: 8px;
+}
+
+.storage-line-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.storage-line-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Minimal Storage Header */
+.storage-header-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Count Title */
+.count-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+/* Mini Icon Containers */
+.icon-container-small {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    margin-bottom: 6px;
+}
+
+.storage-card-compact:hover .icon-container-small {
+    transform: scale(1.05);
+}
+
+/* Small Count Badge */
+.count-badge-small {
+    background: rgba(107, 114, 128, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #374151;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    min-width: 32px;
+    text-align: center;
+}
+
+/* Ultra Compact Buttons Layout */
+.action-buttons-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+/* Tiny Action Buttons for 300px */
+.action-btn-mini {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+
+.action-btn-mini:hover {
+    transform: translateY(-1px) scale(1.05);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn-mini:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Button Color Variants */
+.copy-btn {
+    color: #3B82F6;
+}
+
+.copy-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #2563EB;
+}
+
+.paste-btn {
+    color: #10B981;
+}
+
+.paste-btn:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #059669;
+}
+
+.clear-btn {
+    color: #EF4444;
+}
+
+.clear-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #DC2626;
+}
+
+.details-btn {
+    color: #8B5CF6;
+}
+
+.details-btn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+    color: #7C3AED;
+}
+
+/* Minimal Status Messages */
+.minimal-status {
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.status-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563EB;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Smooth Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+/* Force 3-Column Layout Always */
+@media (max-width: 1024px) {
+    .storage-grid {
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px;
+    }
+
+    .storage-card-compact {
+        padding: 12px;
+        min-height: 120px;
+    }
+
+    .action-buttons-compact {
+        gap: 4px;
+    }
+
+    .action-btn-compact {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Detailed Page Styles */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.75rem;
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateX(-2px);
+}
+
+/* Add Item Section */
+.add-item-section {
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.input-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.modern-input {
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    color: #374151;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.modern-input:focus {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.add-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Row-Based, Cardless Storage Item Layout */
+.storage-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    /* Divider line */
+}
+
+.storage-item-row:last-child {
+    border-bottom: none;
+    /* Remove border from last item */
+}
+
+/* (Keep .item-key-value-container and its children as they are) */
+
+/* (Keep .item-actions and its children as they are) */
+
+/* Remove old card-based styles */
+/*
+.storage-item-card { ... }
+*/
+
+/* Focus states */
+.action-btn-mini:focus,
+.back-button:focus,
+.add-button:focus,
+.modern-input:focus,
+.item-action-btn:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transitions for all elements */
+* {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* DETAILS VIEW STYLES - COMPACT & SINGLE-LINE */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    color: #374151;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Compact Add-Item Form */
+.add-item-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    /* Key | Value | Button */
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+}
+
+.modern-input {
+    padding: 8px 10px;
+    /* Make inputs smaller */
+}
+
+.add-button {
+    padding: 8px 16px;
+    /* Make button smaller */
+}
+
+/* Single-Line Storage Item Card */
+.storage-item-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+.item-key-value-container {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-grow: 1;
+    /* Allow this part to take up space */
+    min-width: 0;
+    /* Critical for flexbox truncation */
+}
+
+.key-text {
+    font-family: monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #1E40AF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+    /* Prevent key from shrinking */
+    max-width: 180px;
+    /* Limit key width */
+}
+
+.value-text {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #4B5563;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    /* Prevent actions from shrinking */
+}
+
+.item-action-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background-color: transparent;
+    /* Remove default background */
+    border: none;
+    /* Remove border */
+    font-size: 0.7rem;
+    display: flex;
+    /* Ensure centering */
+    align-items: center;
+    /* Ensure centering */
+    justify-content: center;
+    /* Ensure centering */
+    transition: background-color 0.2s ease;
+    /* Smooth transition */
+}
+
+.item-action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    /* Show background only on hover */
+}
+
+.copy-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563EB;
+}
+
+.paste-btn:hover {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.clear-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+}
+
+/* Apple-Style Modern Header */
+.header {
+    margin-bottom: 32px !important;
+}
+
+.app-title-group-center {
+    text-align: center;
+    line-height: 1;
+}
+
+.app-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1d1d1f 0%, #424245 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.025em;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.app-subtitle {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #86868b;
+    letter-spacing: 0.01em;
+    margin: 12px 0 0 0;
+    line-height: 1.2;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Contact Footer */
+.contact-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 12px;
+    margin-top: 16px;
+}
+
+.contact-text {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #86868b;
+    letter-spacing: 0.01em;
+}
+
+/* Toast Notification System */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    max-width: 280px;
+    min-width: 200px;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px);
+    pointer-events: auto;
+}
+
+.toast-success {
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.toast-error {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.toast-info {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Smooth Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
