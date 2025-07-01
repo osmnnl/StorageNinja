@@ -33,6 +33,10 @@ class StorageManager {
                 case 'deleteStorageItem':
                     sendResponse(await this.deleteStorageItem(request.storageType, request.key));
                     break;
+                case 'allClearAndRefresh':
+                    await this.allClearAndRefresh();
+                    sendResponse({ success: true });
+                    break;
                 default:
                     sendResponse({ success: false, error: 'Unknown action' });
             }
@@ -349,6 +353,27 @@ class StorageManager {
         } catch (error) {
             console.error('Error deleting storage item:', error);
             return { success: false, error: error.message };
+        }
+    }
+
+    async allClearAndRefresh() {
+        try {
+            // Local Storage
+            localStorage.clear();
+            // Session Storage
+            sessionStorage.clear();
+            // Cookies
+            const cookies = await chrome.cookies.getAll({ url: window.location.href });
+            for (const cookie of cookies) {
+                await chrome.cookies.remove({ url: window.location.href, name: cookie.name });
+            }
+            // Cache (Service Worker Cache API)
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+        } catch (error) {
+            console.error('All clear & refresh error:', error);
         }
     }
 }

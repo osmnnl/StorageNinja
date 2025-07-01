@@ -76,6 +76,9 @@ class StorageNinja {
         document.getElementById('cookies-clear').addEventListener('click', () => this.clearStorage('cookies'));
         document.getElementById('cookies-details').addEventListener('click', () => this.showDetailsView('cookies'));
 
+        // All Clear & Refresh
+        document.getElementById('all-clear-refresh').addEventListener('click', () => this.allClearAndRefresh());
+
         // Details View listeners
         document.getElementById('back-to-main').addEventListener('click', () => this.showMainView());
     }
@@ -404,6 +407,26 @@ class StorageNinja {
         const widthPx = `${width}px`;
         document.body.style.width = widthPx;
         document.documentElement.style.width = widthPx; // Also set for HTML tag
+    }
+
+    async allClearAndRefresh() {
+        if (!confirm('This will clear all Local Storage, Session Storage, Cookies and Cache, and refresh the page. Do you want to continue?')) {
+            return;
+        }
+        try {
+            const response = await this.sendToContentScript({ action: 'allClearAndRefresh' });
+            if (response && response.success) {
+                this.showMessage('All data cleared, refreshing page...', 'success');
+                setTimeout(() => {
+                    window.close(); // Close popup
+                    chrome.tabs.reload(this.currentTab.id);
+                }, 800);
+            } else {
+                this.showMessage('Clear operation failed.', 'error');
+            }
+        } catch (error) {
+            this.showMessage('An error occurred: ' + error.message, 'error');
+        }
     }
 }
 
