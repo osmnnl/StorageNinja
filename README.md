@@ -132,7 +132,13 @@ The extension uses the following minimal permissions for enhanced security:
 - `clipboardRead` - Read clipboard data for paste functionality
 - `clipboardWrite` - Write to clipboard for copy functionality
 
-**Note**: StorageNinja uses only `activeTab` permission for maximum security - no broad host permissions required!
+- `host_permissions` – `<all_urls>`
+  - Required by Chrome Manifest V3 to allow the background service worker to use the `chrome.cookies` API for the URL of the active tab.
+  - Without host permissions, cookie operations (count, list, set, delete) are not available to the extension across sites.
+
+Why this is needed:
+- In MV3, the `chrome.cookies` API is not available in content scripts and must be called from the background service worker.
+- The background script needs host permissions to read/write cookies for the domains you interact with. StorageNinja uses these permissions only to operate on the currently active tab’s URL and never sends data anywhere.
 
 ## 🔒 Security
 

@@ -28,10 +28,10 @@ class StorageManager {
                     sendResponse(await this.clearStorage(request.storageType));
                     break;
                 case 'setStorageItem':
-                    sendResponse(await this.setStorageItem(request.storageType, request.key, request.value));
+                    sendResponse(await this.setStorageItem(request.storageType, request.key, request.value, request.extra));
                     break;
                 case 'deleteStorageItem':
-                    sendResponse(await this.deleteStorageItem(request.storageType, request.key));
+                    sendResponse(await this.deleteStorageItem(request.storageType, request.key, request.extra));
                     break;
                 case 'allClearAndRefresh':
                     await this.allClearAndRefresh();
@@ -80,8 +80,8 @@ class StorageManager {
 
     async getCookiesCount() {
         try {
-            const cookies = await chrome.cookies.getAll({ url: window.location.href });
-            return cookies.length;
+            const response = await this.callBackground({ action: 'cookies.getCount', url: window.location.href });
+            return response && response.success ? (response.count || 0) : 0;
         } catch (error) {
             console.error('Error accessing cookies:', error);
             return 0;
@@ -145,35 +145,28 @@ class StorageManager {
 
     async getCookiesData() {
         try {
-            const cookies = await chrome.cookies.getAll({ url: window.location.href });
-            const data = {};
-            cookies.forEach(cookie => {
-                data[cookie.name] = {
-                    value: cookie.value,
-                    domain: cookie.domain,
-                    path: cookie.path,
-                    secure: cookie.secure,
-                    httpOnly: cookie.httpOnly,
-                    expirationDate: cookie.expirationDate
-                };
-            });
-            return data;
+            const response = await this.callBackground({ action: 'cookies.getAll', url: window.location.href });
+            // Return array of cookie objects; fallback to empty array
+            return response && response.success ? (response.cookies || []) : [];
         } catch (error) {
             console.error('Error reading cookies:', error);
-            return {};
+            return [];
         }
     }
 
     isValidCookieData(data) {
-        if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-            return false;
+        // Accept array format: [{ name, value, domain, path, secure, httpOnly, expirationDate }, ...]
+        if (Array.isArray(data)) {
+            if (data.length === 0) return true;
+            const c = data[0] || {};
+            return typeof c === 'object' && !!c.name && 'value' in c;
         }
-        // Check if at least one value looks like a cookie object.
-        const firstValue = Object.values(data)[0];
-        if (typeof firstValue !== 'object' || firstValue === null || !('value' in firstValue) || !('domain' in firstValue)) {
-            return false;
+        // Accept object map format: { name: { value, domain, ... } }
+        if (typeof data === 'object' && data !== null) {
+            const firstValue = Object.values(data)[0];
+            return typeof firstValue === 'object' && firstValue !== null && ('value' in firstValue);
         }
-        return true;
+        return false;
     }
 
     async setStorage(storageType, data) {
@@ -233,31 +226,9 @@ class StorageManager {
 
     async setCookiesData(data) {
         try {
-            // Set new cookies without clearing existing ones from other domains
-            for (const [name, cookieData] of Object.entries(data)) {
-                // Construct a valid URL from the cookie's domain and path
-                const domain = cookieData.domain.startsWith('.') ? cookieData.domain.substring(1) : cookieData.domain;
-                const url = `http${cookieData.secure ? 's' : ''}://${domain}${cookieData.path || '/'}`;
-
-                const cookieDetails = {
-                    url: url,
-                    name: name,
-                    value: cookieData.value,
-                    domain: cookieData.domain,
-                    path: cookieData.path,
-                    secure: cookieData.secure,
-                    httpOnly: cookieData.httpOnly,
-                    expirationDate: cookieData.expirationDate
-                };
-
-                // Remove properties that might cause issues if they are null/undefined
-                Object.keys(cookieDetails).forEach(key => {
-                    if (cookieDetails[key] === null || cookieDetails[key] === undefined) {
-                        delete cookieDetails[key];
-                    }
-                });
-
-                await chrome.cookies.set(cookieDetails);
+            const response = await this.callBackground({ action: 'cookies.setMany', url: window.location.href, data });
+            if (!response || !response.success) {
+                throw new Error(response && response.error ? response.error : 'Cookie set failed');
             }
         } catch (error) {
             console.error('Error: Problem occurred while setting cookie.', error, data);
@@ -290,12 +261,9 @@ class StorageManager {
 
     async clearCookies() {
         try {
-            const cookies = await chrome.cookies.getAll({ url: window.location.href });
-            for (const cookie of cookies) {
-                await chrome.cookies.remove({
-                    url: window.location.href,
-                    name: cookie.name
-                });
+            const response = await this.callBackground({ action: 'cookies.clearAll', url: window.location.href });
+            if (!response || !response.success) {
+                throw new Error(response && response.error ? response.error : 'Cookie clear failed');
             }
         } catch (error) {
             console.error('Error clearing cookies:', error);
@@ -303,7 +271,7 @@ class StorageManager {
         }
     }
 
-    async setStorageItem(storageType, key, value) {
+    async setStorageItem(storageType, key, value, extra = {}) {
         try {
             switch (storageType) {
                 case 'localStorage':
@@ -313,10 +281,16 @@ class StorageManager {
                     sessionStorage.setItem(key, value);
                     break;
                 case 'cookies':
-                    await chrome.cookies.set({
+                    await this.callBackground({
+                        action: 'cookies.setItem',
                         url: window.location.href,
                         name: key,
-                        value: value
+                        value: value,
+                        domain: extra.domain,
+                        path: extra.path,
+                        secure: extra.secure,
+                        httpOnly: extra.httpOnly,
+                        expirationDate: extra.expirationDate
                     });
                     break;
                 default:
@@ -330,7 +304,7 @@ class StorageManager {
         }
     }
 
-    async deleteStorageItem(storageType, key) {
+    async deleteStorageItem(storageType, key, extra = {}) {
         try {
             switch (storageType) {
                 case 'localStorage':
@@ -340,9 +314,13 @@ class StorageManager {
                     sessionStorage.removeItem(key);
                     break;
                 case 'cookies':
-                    await chrome.cookies.remove({
+                    await this.callBackground({
+                        action: 'cookies.deleteItem',
                         url: window.location.href,
-                        name: key
+                        name: key,
+                        domain: extra.domain,
+                        path: extra.path,
+                        secure: extra.secure
                     });
                     break;
                 default:
@@ -363,10 +341,7 @@ class StorageManager {
             // Session Storage
             sessionStorage.clear();
             // Cookies
-            const cookies = await chrome.cookies.getAll({ url: window.location.href });
-            for (const cookie of cookies) {
-                await chrome.cookies.remove({ url: window.location.href, name: cookie.name });
-            }
+            await this.callBackground({ action: 'cookies.clearAll', url: window.location.href });
             // Cache (Service Worker Cache API)
             if ('caches' in window) {
                 const cacheNames = await caches.keys();
@@ -374,6 +349,16 @@ class StorageManager {
             }
         } catch (error) {
             console.error('All clear & refresh error:', error);
+        }
+    }
+
+    async callBackground(message) {
+        try {
+            const response = await chrome.runtime.sendMessage(message);
+            return response;
+        } catch (e) {
+            console.error('Background message failed:', e);
+            return { success: false, error: e.message };
         }
     }
 }

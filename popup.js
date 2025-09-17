@@ -107,8 +107,11 @@ class StorageNinja {
             });
 
             if (response && response.data) {
-                const dataCount = Object.keys(response.data).length;
-                await navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
+                const data = response.data;
+                const dataCount = (storageType === 'cookies' && Array.isArray(data))
+                    ? data.length
+                    : Object.keys(data).length;
+                await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
                 this.showMessage(`${this.getStorageDisplayName(storageType)} copied (${dataCount} items)`, 'success');
             } else {
                 this.showMessage('No data found to copy', 'info');
@@ -222,19 +225,45 @@ class StorageNinja {
             if (response && response.success) {
                 itemsList.innerHTML = '';
                 const data = response.data;
-                const keys = Object.keys(data);
+                if (this.currentDetailStorage === 'cookies') {
+                    const cookies = Array.isArray(data) ? data : [];
+                    if (cookies.length === 0) {
+                        itemsList.innerHTML = `<div class="text-center p-4 text-gray-500">Empty</div>`;
+                    } else {
+                        // Header row (grid)
+                        const header = document.createElement('div');
+                        header.className = 'cookie-grid cookie-header';
+                        header.innerHTML = `
+                            <div class="cookie-cell">Name</div>
+                            <div class="cookie-cell">Value</div>
+                            <div class="cookie-cell">Domain</div>
+                            <div class="cookie-cell">Path</div>
+                            <div class="cookie-cell">Secure</div>
+                            <div class="cookie-cell">HttpOnly</div>
+                            <div class="cookie-cell">Expires</div>
+                            <div class="cookie-cell cookie-actions">Actions</div>
+                        `;
+                        itemsList.appendChild(header);
 
-                if (keys.length === 0) {
-                    itemsList.innerHTML = `<div class="text-center p-4 text-gray-500">Empty</div>`;
+                        cookies.forEach(cookie => {
+                            const row = this.createCookieRow(cookie);
+                            itemsList.appendChild(row);
+                        });
+                    }
+                    this.renderAddCookieForm();
                 } else {
-                    keys.forEach(key => {
-                        const itemEl = this.createItemElement(this.currentDetailStorage, key, data[key]);
-                        itemsList.appendChild(itemEl);
-                    });
+                    const keys = Object.keys(data);
+                    if (keys.length === 0) {
+                        itemsList.innerHTML = `<div class="text-center p-4 text-gray-500">Empty</div>`;
+                    } else {
+                        keys.forEach(key => {
+                            const itemEl = this.createItemElement(this.currentDetailStorage, key, data[key]);
+                            itemsList.appendChild(itemEl);
+                        });
+                    }
+                    // Add the "Add Item" form
+                    this.renderAddItemForm();
                 }
-
-                // Add the "Add Item" form
-                this.renderAddItemForm();
 
             } else {
                 throw new Error(response.error || 'Could not retrieve data');
@@ -242,6 +271,127 @@ class StorageNinja {
         } catch (error) {
             itemsList.innerHTML = `<div class="status-error p-4">Error: ${error.message}</div>`;
         }
+    }
+
+    createCookieRow(cookie) {
+        const row = document.createElement('div');
+        row.className = 'cookie-grid';
+
+        const valueString = typeof cookie.value === 'object' && cookie.value !== null ? JSON.stringify(cookie.value) : String(cookie.value);
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'cookie-cell';
+        nameEl.textContent = cookie.name;
+        nameEl.title = cookie.name;
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'cookie-cell cookie-value-cell';
+        valueEl.textContent = valueString;
+        valueEl.title = valueString;
+        valueEl.addEventListener('click', () => {
+            this.showValueModal(cookie.name, valueString);
+        });
+
+        const domainEl = document.createElement('div');
+        domainEl.className = 'cookie-cell';
+        domainEl.textContent = cookie.domain || '';
+        domainEl.title = cookie.domain || '';
+
+        const pathEl = document.createElement('div');
+        pathEl.className = 'cookie-cell';
+        pathEl.textContent = cookie.path || '/';
+
+        const secureEl = document.createElement('div');
+        secureEl.className = 'cookie-cell';
+        secureEl.textContent = cookie.secure ? 'Yes' : 'No';
+
+        const httpOnlyEl = document.createElement('div');
+        httpOnlyEl.className = 'cookie-cell';
+        httpOnlyEl.textContent = cookie.httpOnly ? 'Yes' : 'No';
+
+        const expEl = document.createElement('div');
+        expEl.className = 'cookie-cell';
+        expEl.textContent = cookie.expirationDate ? new Date(cookie.expirationDate * 1000).toLocaleString() : '';
+
+        // Actions container as sticky last column
+        const actions = document.createElement('div');
+        actions.className = 'cookie-actions';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        copyBtn.className = 'item-action-btn copy-btn';
+        copyBtn.title = 'Copy Cookie JSON';
+        copyBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await navigator.clipboard.writeText(JSON.stringify(cookie, null, 2));
+            this.showMessage(`'${cookie.name}' cookie copied`, 'success');
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.className = 'item-action-btn clear-btn';
+        deleteBtn.title = 'Delete Cookie';
+        deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (confirm(`Delete cookie '${cookie.name}' for ${cookie.domain}${cookie.path || '/'}?`)) {
+                await this.deleteItem('cookies', cookie.name, {
+                    domain: cookie.domain,
+                    path: cookie.path,
+                    secure: cookie.secure
+                });
+            }
+        });
+
+        actions.appendChild(copyBtn);
+        actions.appendChild(deleteBtn);
+
+        // Append cells
+        row.appendChild(nameEl);
+        row.appendChild(valueEl);
+        row.appendChild(domainEl);
+        row.appendChild(pathEl);
+        row.appendChild(secureEl);
+        row.appendChild(httpOnlyEl);
+        row.appendChild(expEl);
+        row.appendChild(actions);
+        return row;
+    }
+
+    showValueModal(title, text) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        const modal = document.createElement('div');
+        modal.className = 'modal-content';
+        modal.innerHTML = `
+            <div class="modal-title">${this.escapeHtml(title)}</div>
+            <div class="modal-body">${this.escapeHtml(text)}</div>
+            <div class="modal-actions">
+                <button id="modal-copy" class="btn">Copy</button>
+                <button id="modal-close" class="btn btn-primary">Close</button>
+            </div>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) document.body.removeChild(overlay);
+        });
+        modal.querySelector('#modal-close').addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+        modal.querySelector('#modal-copy').addEventListener('click', async () => {
+            await navigator.clipboard.writeText(text);
+            this.showMessage('Value copied', 'success');
+        });
+    }
+
+    escapeHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     createItemElement(storageType, key, value) {
@@ -334,10 +484,48 @@ class StorageNinja {
         });
     }
 
+    renderAddCookieForm() {
+        const formContainer = document.getElementById('add-item-form');
+        formContainer.innerHTML = `
+            <div class="add-item-container">
+                <input id="cookie-name" class="modern-input" placeholder="Name">
+                <input id="cookie-value" class="modern-input" placeholder="Value">
+                <input id="cookie-domain" class="modern-input" placeholder="Domain (e.g. .example.com)">
+                <input id="cookie-path" class="modern-input" placeholder="Path (default '/')">
+                <input id="cookie-exp" class="modern-input" placeholder="Expiration (Unix seconds or empty)">
+                <label style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="cookie-secure"> Secure
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="cookie-httponly"> HttpOnly
+                </label>
+                <button id="add-cookie-btn" class="add-button">Add Cookie</button>
+            </div>
+        `;
+
+        document.getElementById('add-cookie-btn').addEventListener('click', async () => {
+            const name = document.getElementById('cookie-name').value.trim();
+            const value = document.getElementById('cookie-value').value;
+            const domain = document.getElementById('cookie-domain').value.trim();
+            const path = document.getElementById('cookie-path').value.trim() || '/';
+            const expStr = document.getElementById('cookie-exp').value.trim();
+            const secure = !!document.getElementById('cookie-secure').checked;
+            const httpOnly = !!document.getElementById('cookie-httponly').checked;
+            const expirationDate = expStr ? Number(expStr) : undefined;
+
+            if (!name) {
+                this.showMessage('Cookie name is required', 'error');
+                return;
+            }
+
+            await this.setItem('cookies', name, value, { domain, path, secure, httpOnly, expirationDate });
+        });
+    }
+
     // NEW CRUD Functions for Details View
-    async setItem(storageType, key, value) {
+    async setItem(storageType, key, value, extra = undefined) {
         try {
-            await this.sendToContentScript({ action: 'setStorageItem', storageType, key, value });
+            await this.sendToContentScript({ action: 'setStorageItem', storageType, key, value, extra });
             this.showMessage(`'${key}' successfully added/updated`, 'success');
             await this.renderDetails(); // Refresh list
         } catch (error) {
@@ -345,9 +533,9 @@ class StorageNinja {
         }
     }
 
-    async deleteItem(storageType, key) {
+    async deleteItem(storageType, key, extra = undefined) {
         try {
-            await this.sendToContentScript({ action: 'deleteStorageItem', storageType, key });
+            await this.sendToContentScript({ action: 'deleteStorageItem', storageType, key, extra });
             this.showMessage(`'${key}' successfully deleted`, 'success');
             await this.renderDetails(); // Refresh list
         } catch (error) {
