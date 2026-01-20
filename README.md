@@ -36,6 +36,7 @@
 ## 🚀 Installation
 
 ### Install from Chrome Web Store
+
 🎉 **StorageNinja is now live on Chrome Web Store!**
 
 **[👉 Install StorageNinja](https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp)**
@@ -44,26 +45,9 @@ Simply click the link above and hit "Add to Chrome" to install the extension ins
 
 ### Manual Installation (Developer Mode)
 
-1. **Download Files**
-   ```bash
-   git clone https://github.com/osmnnl/StorageNinja.git
-cd StorageNinja
-   ```
-
-2. **Prepare Icon Files**
-   Add the following files to the `icons/` folder:
-   - `icon16.png` (16x16 pixels)
-   - `icon48.png` (48x48 pixels)
-   - `icon128.png` (128x128 pixels)
-
-3. **Enable Developer Mode in Chrome**
-   - Go to `chrome://extensions/` in Chrome
-   - Turn on "Developer mode" switch in the top right corner
-
-4. **Load the Extension**
-   - Click "Load unpacked" button
-   - Select the project folder
-   - StorageNinja extension will be loaded
+1. Clone the repository: `git clone https://github.com/osmnnl/StorageNinja.git`
+2. Go to `chrome://extensions/` and enable **Developer mode**
+3. Click **Load unpacked** and select the project folder
 
 ## 📖 Usage
 
@@ -72,19 +56,21 @@ cd StorageNinja
 After installing the extension, click the StorageNinja icon in the browser toolbar.
 
 #### Storage Sections
+
 - 🟢 **Local Storage**: Persistent local storage
 - 🟡 **Session Storage**: Session-based storage
 - 🟠 **Cookies**: HTTP cookies
 
 #### Main Operations
+
 Four main operations are available for each storage type:
 
-| Icon | Operation | Description |
-|------|-----------|-------------|
-| 📋 | **Copy** | Copies all data to clipboard in JSON format |
-| 📥 | **Paste** | Loads JSON data from clipboard to storage |
-| 🗑️ | **Clear** | Deletes all data (asks for confirmation) |
-| 👁️ | **Details** | Shows key-value pairs in detail |
+| Icon | Operation   | Description                                 |
+| ---- | ----------- | ------------------------------------------- |
+| 📋   | **Copy**    | Copies all data to clipboard in JSON format |
+| 📥   | **Paste**   | Loads JSON data from clipboard to storage   |
+| 🗑️   | **Clear**   | Deletes all data (asks for confirmation)    |
+| 👁️   | **Details** | Shows key-value pairs in detail             |
 
 ### Detail View
 
@@ -100,6 +86,7 @@ When you click the "Details" button, on the opened page:
 ## ⚙️ Technical Details
 
 ### File Structure
+
 ```
 storage-ninja/
 ├── manifest.json          # Extension configuration
@@ -116,6 +103,7 @@ storage-ninja/
 ```
 
 ### Technologies
+
 - **Manifest V3** - Modern Chrome Extension standard
 - **HTML5** - Interface structure
 - **Tailwind CSS** - Style framework
@@ -124,7 +112,9 @@ storage-ninja/
 - **Chrome APIs** - Storage, cookies, scripting APIs
 
 ### Permissions
+
 The extension uses the following minimal permissions for enhanced security:
+
 - `activeTab` - Access only the currently active tab (no broad website access)
 - `storage` - Chrome storage API for extension settings
 - `cookies` - Cookie management on active tab only
@@ -137,6 +127,7 @@ The extension uses the following minimal permissions for enhanced security:
   - Without host permissions, cookie operations (count, list, set, delete) are not available to the extension across sites.
 
 Why this is needed:
+
 - In MV3, the `chrome.cookies` API is not available in content scripts and must be called from the background service worker.
 - The background script needs host permissions to read/write cookies for the domains you interact with. StorageNinja uses these permissions only to operate on the currently active tab’s URL and never sends data anywhere.
 
@@ -150,15 +141,18 @@ Why this is needed:
 ## 🛠️ Development
 
 ### Requirements
+
 - Chrome/Chromium browser
 - Basic HTML/CSS/JavaScript knowledge
 
 ### Running in Development Mode
+
 1. Clone the project
 2. Load via "Load unpacked" from `chrome://extensions/` page
 3. Click "Reload" button after making changes
 
 ### Debug
+
 - View console logs in `Developer Tools > Console`
 - Background script logs via "Inspect" link on extension page
 - Popup debug with `F12` key while popup is open

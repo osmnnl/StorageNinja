@@ -1,206 +1,1010 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StorageNinja - Chrome Extension</title>
-    <meta name="description"
-        content="Storage management tool for Chrome browser - Easily manage Local Storage, Session Storage & Cookies">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta
+      name="description"
+      content="Storage management tool for Chrome browser - Easily manage Local Storage, Session Storage & Cookies"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --secondary: #a855f7;
+        --accent: #fbbf24;
+        --bg-dark: #020617;
+        --bg-surface: #0f172a;
+        --bg-card: rgba(30, 41, 59, 0.4);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --glow-primary: rgba(99, 102, 241, 0.2);
+        --glow-secondary: rgba(168, 85, 247, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      .landing-container {
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Background Gradients */
+      .landing-container::before {
+        content: "";
+        position: absolute;
+        top: -10%;
+        left: -5%;
+        width: 60%;
+        height: 60%;
+        background: radial-gradient(
+          circle,
+          var(--glow-primary) 0%,
+          transparent 70%
+        );
+        filter: blur(100px);
+        z-index: -1;
+      }
+
+      .landing-container::after {
+        content: "";
+        position: absolute;
+        top: 40%;
+        right: -10%;
+        width: 50%;
+        height: 50%;
+        background: radial-gradient(
+          circle,
+          var(--glow-secondary) 0%,
+          transparent 70%
+        );
+        filter: blur(120px);
+        z-index: -1;
+      }
+
+      /* Header */
+      .landing-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: rgba(2, 6, 23, 0.7);
+        backdrop-filter: blur(16px);
+        z-index: 1000;
+        border-bottom: 1px solid var(--border-glass);
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: -0.025em;
+        text-decoration: none;
+      }
+
+      .logo-text {
+        background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .logo-accent {
+        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .logo img {
+        width: 36px;
+        height: 36px;
+        filter: drop-shadow(0 0 8px var(--glow-primary));
+      }
+
+      nav {
+        display: flex;
+        gap: 2.5rem;
+      }
+
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+
+      nav a::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: width 0.3s ease;
+      }
+
+      nav a:hover {
+        color: var(--text-main);
+      }
+
+      nav a:hover::after {
+        width: 100%;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 180px 2rem 100px;
+        text-align: center;
+        position: relative;
+      }
+
+      .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        padding: 0.5rem 1.25rem;
+        background: rgba(79, 70, 229, 0.1);
+        border: 1px solid rgba(79, 70, 229, 0.3);
+        border-radius: 9999px;
+        color: #a5b4fc;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        animation: slideDown 0.6s ease-out;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 2rem;
+        letter-spacing: -0.04em;
+        animation: fadeInUp 0.8s ease-out forwards;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .hero h1 img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .highlight {
+        background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+      }
+
+      .highlight-yellow {
+        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+      }
+
+      .hero p {
+        font-size: clamp(1.125rem, 2vw, 1.35rem);
+        color: #94a3b8;
+        margin-bottom: 3.5rem;
+        line-height: 1.6;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: fadeInUp 1s ease-out forwards;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        animation: fadeInUp 1.2s ease-out forwards;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 1.125rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: none;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: white;
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-4px);
+        filter: brightness(1.1);
+        box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border: 1px solid var(--border-glass);
+        backdrop-filter: blur(8px);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-accent {
+        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
+        color: #1a1a1a;
+        box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
+      }
+
+      .btn-accent:hover {
+        transform: translateY(-4px);
+        filter: brightness(1.1);
+        box-shadow: 0 20px 30px -10px rgba(251, 191, 36, 0.5);
+      }
+
+      /* Features Section */
+      .features-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        padding: 6rem 2rem;
+      }
+
+      .feature-card {
+        background: var(--bg-card);
+        padding: 3rem;
+        border-radius: 2rem;
+        border: 1px solid var(--border-glass);
+        backdrop-filter: blur(12px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(79, 70, 229, 0.05) 0%,
+          transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(79, 70, 229, 0.4);
+        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-card .icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .feature-card .icon.green {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+      }
+
+      .feature-card .icon.yellow {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+      }
+
+      .feature-card .icon.pink {
+        background: rgba(236, 72, 153, 0.15);
+        color: #f472b6;
+      }
+
+      .feature-card h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .feature-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+        font-size: 1.1rem;
+      }
+
+      /* Why Section */
+      .why-section {
+        padding: 100px 2rem;
+        text-align: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .why-section h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.04em;
+      }
+
+      .why-section .subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        margin-bottom: 4rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .why-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 2.5rem;
+      }
+
+      .why-item {
+        text-align: center;
+      }
+
+      .why-item .icon-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.5rem;
+      }
+
+      .why-item .icon-circle.blue {
+        background: rgba(59, 130, 246, 0.1);
+        color: #60a5fa;
+      }
+
+      .why-item .icon-circle.green {
+        background: rgba(34, 197, 94, 0.1);
+        color: #4ade80;
+      }
+
+      .why-item .icon-circle.purple {
+        background: rgba(168, 85, 247, 0.1);
+        color: #c084fc;
+      }
+
+      .why-item .icon-circle.orange {
+        background: rgba(251, 146, 60, 0.1);
+        color: #fb923c;
+      }
+
+      .why-item h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+
+      .why-item p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      /* Install Section */
+      .install-section {
+        padding: 120px 2rem;
+        background: radial-gradient(
+          circle at center,
+          rgba(79, 70, 229, 0.05) 0%,
+          transparent 70%
+        );
+      }
+
+      .install-section h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 4rem;
+        letter-spacing: -0.04em;
+      }
+
+      .install-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 3rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .install-card {
+        padding: 3.5rem;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-glass);
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.4s ease;
+        box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4);
+      }
+
+      .install-card:hover {
+        transform: translateY(-8px);
+      }
+
+      .install-card.chrome {
+        border-left: 4px solid var(--primary);
+      }
+
+      .install-card.developer {
+        border-left: 4px solid #10b981;
+      }
+
+      .install-card h3 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .install-card h3 i {
+        font-size: 1.5rem;
+      }
+
+      .install-card p {
+        color: var(--text-muted);
+        font-size: 1.15rem;
+        line-height: 1.6;
+        margin-bottom: 3rem;
+        flex-grow: 1;
+      }
+
+      .btn-success {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-success:hover {
+        background: #059669;
+        transform: translateY(-4px);
+        box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.4);
+      }
+
+      /* Cross Promotion Section */
+      .promo-section {
+        padding: 100px 2rem;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .promo-section h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 3rem;
+        letter-spacing: -0.04em;
+      }
+
+      .promo-card {
+        background: var(--bg-card);
+        padding: 3rem;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-glass);
+        backdrop-filter: blur(12px);
+        transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .promo-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(79, 70, 229, 0.4);
+        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+      }
+
+      .promo-card .promo-logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 2rem;
+        font-weight: 800;
+      }
+
+      .promo-card .promo-logo img {
+        width: 56px;
+        height: 56px;
+        border-radius: 1rem;
+      }
+
+      .promo-card .promo-description {
+        color: var(--text-muted);
+        font-size: 1.15rem;
+        line-height: 1.7;
+        max-width: 600px;
+      }
+
+      .promo-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin: 1rem 0;
+      }
+
+      .promo-feature {
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        color: #a5b4fc;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      /* Footer */
+      .landing-footer {
+        padding: 6rem 2rem 4rem;
+        text-align: center;
+        border-top: 1px solid var(--border-glass);
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--text-main);
+        transform: translateY(-2px);
+      }
+
+      .footer-content p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-content a.text-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+
+      .footer-content a.text-link:hover {
+        color: #fff;
+      }
+
+      .footer-privacy {
+        margin-top: 1.5rem;
+      }
+
+      .footer-privacy a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+
+      .footer-privacy a:hover {
+        color: var(--text-main);
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Mobile Fixes */
+      @media (max-width: 768px) {
+        .header-content {
+          padding: 0 1.5rem;
+        }
+
+        nav {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 140px;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+          padding: 0 2rem;
+        }
+
+        .btn {
+          justify-content: center;
+          padding: 1rem 2rem;
+          width: 100%;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+          padding: 4rem 1.5rem;
+        }
+
+        .install-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .install-card {
+          padding: 2.5rem;
+        }
+
+        .why-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .promo-card {
+          padding: 2rem;
+        }
+      }
     </style>
-</head>
+  </head>
 
-<body class="bg-gray-50">
-    <!-- Hero Section -->
-    <div class="gradient-bg min-h-screen">
-        <div class="container mx-auto px-6 py-16">
-            <!-- Navigation -->
-            <nav class="flex flex-col sm:flex-row justify-between items-center mb-16 gap-4">
-                <div class="flex items-center space-x-3">
-                    <img src="icons/icon.png" alt="StorageNinja" class="w-10 h-10 rounded-lg">
-                    <span class="text-white text-xl font-bold">Storage <span class="text-yellow-300">Ninja</span></span>
-                </div>
-                <div class="flex flex-wrap gap-4 justify-center">
-                    <a href="#features" class="text-white hover:text-gray-200 transition-colors">Features</a>
-                    <a href="#install" class="text-white hover:text-gray-200 transition-colors">Install</a>
-                    <a href="privacy-policy.html" class="text-white hover:text-gray-200 transition-colors">Privacy</a>
-                </div>
-            </nav>
-
-            <!-- Hero Content -->
-            <div class="text-center text-white">
-                <h1
-                    class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-                    <img src="icons/icon.png" alt="StorageNinja" class="w-16 h-16">
-                    <span>Storage <span class="text-yellow-300">Ninja</span></span>
-                </h1>
-                <p class="text-lg sm:text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto px-4">
-                    Powerful Chrome extension to manage Local Storage, Session Storage, and Cookies with ease
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="https://github.com/osmnnl/StorageNinja"
-                        class="w-full sm:w-auto text-center bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        <i class="fab fa-github mr-2"></i>View on GitHub
-                    </a>
-                    <a href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
-                        target="_blank"
-                        class="w-full sm:w-auto text-center bg-yellow-400 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
-                        <i class="fas fa-download mr-2"></i>Install Extension
-                    </a>
-                </div>
-            </div>
-
-            <!-- Feature Cards -->
-            <div class="grid md:grid-cols-3 gap-8 mt-16" id="features">
-                <div class="glass-card rounded-xl p-6 text-white">
-                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
-                        <i class="fas fa-hard-drive text-green-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Local Storage</h3>
-                    <p class="text-gray-200">View, copy, paste, and manage persistent local storage data on any website
-                    </p>
-                </div>
-
-                <div class="glass-card rounded-xl p-6 text-white">
-                    <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
-                        <i class="fas fa-clock text-yellow-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Session Storage</h3>
-                    <p class="text-gray-200">Manage session-based storage data with full control and JSON support</p>
-                </div>
-
-                <div class="glass-card rounded-xl p-6 text-white">
-                    <div class="w-12 h-12 bg-pink-500 bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
-                        <i class="fas fa-cookie-bite text-pink-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Cookies</h3>
-                    <p class="text-gray-200">Handle HTTP cookies with detailed attributes and secure operations</p>
-                </div>
-            </div>
+  <body>
+    <div class="landing-container">
+      <!-- Header -->
+      <header class="landing-header">
+        <div class="header-content">
+          <a href="#" class="logo">
+            <img src="icons/icon.png" alt="StorageNinja" />
+            <span class="logo-text">Storage</span
+            ><span class="logo-accent">Ninja</span>
+          </a>
+          <nav>
+            <a href="#features">Features</a>
+            <a href="#install">Install</a>
+            <a href="privacy-policy.html">Privacy</a>
+            <a href="https://github.com/osmnnl/StorageNinja" target="_blank"
+              >GitHub</a
+            >
+          </nav>
         </div>
-    </div>
+      </header>
 
-    <!-- Features Section -->
-    <div class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Why Choose StorageNinja?</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">
-                    A comprehensive solution for developers and power users to manage browser storage efficiently
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-copy text-blue-600 text-xl"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 mb-2">JSON Support</h3>
-                    <p class="text-gray-600 text-sm">Copy and paste data in JSON format between different storage types
-                    </p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-shield-alt text-green-600 text-xl"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 mb-2">Safe Operations</h3>
-                    <p class="text-gray-600 text-sm">Confirmation dialogs and secure handling of sensitive data</p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-eye text-purple-600 text-xl"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 mb-2">Detailed View</h3>
-                    <p class="text-gray-600 text-sm">Individual key-value management with editing capabilities</p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-rocket text-orange-600 text-xl"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 mb-2">Modern UI</h3>
-                    <p class="text-gray-600 text-sm">Clean, intuitive interface designed with Tailwind CSS</p>
-                </div>
-            </div>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <div class="hero-badge">🎉 Chrome Web Store'da Yayında!</div>
+          <h1>
+            <img src="icons/icon.png" alt="StorageNinja" />
+            <span>Storage<span class="highlight-yellow">Ninja</span></span>
+          </h1>
+          <p>
+            Powerful Chrome extension to manage <strong>Local Storage</strong>,
+            <strong>Session Storage</strong>, and <strong>Cookies</strong> with
+            ease
+          </p>
+          <div class="hero-actions">
+            <a
+              href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
+              target="_blank"
+              class="btn btn-accent"
+            >
+              <i class="fas fa-download"></i>
+              <span>Install Extension</span>
+            </a>
+            <a
+              href="https://github.com/osmnnl/StorageNinja"
+              class="btn btn-secondary"
+            >
+              <i class="fab fa-github"></i>
+              <span>View on GitHub</span>
+            </a>
+          </div>
         </div>
-    </div>
+      </section>
 
-    <!-- Installation Section -->
-    <div class="py-16 bg-gray-50" id="install">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Easy Installation</h2>
-                <p class="text-gray-600">Get started with StorageNinja in just a few steps</p>
-            </div>
-
-            <div class="max-w-4xl mx-auto">
-                <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Chrome Web Store -->
-                    <div class="bg-white rounded-lg p-6 shadow-lg">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fab fa-chrome text-blue-600 mr-3"></i>
-                            Chrome Web Store
-                        </h3>
-                        <p class="text-gray-600 mb-4">🎉 StorageNinja is now live! Install directly from Chrome Web
-                            Store with just one click.</p>
-                        <a href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
-                            target="_blank"
-                            class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors inline-block text-center">
-                            <i class="fas fa-download mr-2"></i>Install Now
-                        </a>
-                    </div>
-
-                    <!-- Manual Installation -->
-                    <div class="bg-white rounded-lg p-6 shadow-lg">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-code text-green-600 mr-3"></i>
-                            Developer Mode
-                        </h3>
-                        <p class="text-gray-600 mb-4">Install manually for testing and development purposes.</p>
-                        <a href="https://github.com/osmnnl/StorageNinja#installation"
-                            class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors inline-block text-center">
-                            View Instructions
-                        </a>
-                    </div>
-                </div>
-            </div>
+      <!-- Features Section -->
+      <section id="features" class="features-grid">
+        <div class="feature-card">
+          <div class="icon green">
+            <i class="fas fa-hard-drive"></i>
+          </div>
+          <h3>Local Storage</h3>
+          <p>
+            View, copy, paste, and manage persistent local storage data on any
+            website
+          </p>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-6 text-center">
-            <div class="flex justify-center space-x-6 mb-4">
-                <a href="https://github.com/osmnnl/StorageNinja" class="hover:text-gray-300 transition-colors">
-                    <i class="fab fa-github text-2xl"></i>
-                </a>
-                <a href="mailto:osmnnldev@gmail.com" class="hover:text-gray-300 transition-colors">
-                    <i class="fas fa-envelope text-2xl"></i>
-                </a>
+        <div class="feature-card">
+          <div class="icon yellow">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Session Storage</h3>
+          <p>
+            Manage session-based storage data with full control and JSON support
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon pink">
+            <i class="fas fa-cookie-bite"></i>
+          </div>
+          <h3>Cookies</h3>
+          <p>
+            Handle HTTP cookies with detailed attributes and secure operations
+          </p>
+        </div>
+      </section>
+
+      <!-- Why Section -->
+      <section class="why-section">
+        <h2>Why Choose StorageNinja?</h2>
+        <p class="subtitle">
+          A comprehensive solution for developers and power users to manage
+          browser storage efficiently
+        </p>
+        <div class="why-grid">
+          <div class="why-item">
+            <div class="icon-circle blue">
+              <i class="fas fa-copy"></i>
             </div>
-            <p class="text-gray-400 mb-2">Storage <span class="text-yellow-300">Ninja</span> - Chrome Extension</p>
-            <p class="text-gray-500 text-sm">
-                Made with ❤️ by <a href="https://github.com/osmnnl" class="text-white hover:text-gray-300">osmnnl</a>
+            <h3>JSON Support</h3>
+            <p>
+              Copy and paste data in JSON format between different storage types
             </p>
-            <div class="mt-4 text-sm text-gray-500">
-                <a href="privacy-policy.html" class="hover:text-gray-300">Privacy Policy</a>
+          </div>
+          <div class="why-item">
+            <div class="icon-circle green">
+              <i class="fas fa-shield-alt"></i>
             </div>
+            <h3>Safe Operations</h3>
+            <p>Confirmation dialogs and secure handling of sensitive data</p>
+          </div>
+          <div class="why-item">
+            <div class="icon-circle purple">
+              <i class="fas fa-eye"></i>
+            </div>
+            <h3>Detailed View</h3>
+            <p>Individual key-value management with editing capabilities</p>
+          </div>
+          <div class="why-item">
+            <div class="icon-circle orange">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h3>Modern UI</h3>
+            <p>Clean, intuitive interface with premium design</p>
+          </div>
         </div>
-    </footer>
-</body>
+      </section>
 
+      <!-- Installation Section -->
+      <section id="install" class="install-section">
+        <h2>Easy Installation</h2>
+        <div class="install-cards">
+          <div class="install-card chrome">
+            <h3>
+              <i class="fab fa-chrome" style="color: #60a5fa"></i>
+              Chrome Web Store
+            </h3>
+            <p>
+              🎉 StorageNinja is now live! Install directly from Chrome Web
+              Store with just one click.
+            </p>
+            <a
+              href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
+              target="_blank"
+              class="btn btn-primary"
+            >
+              <i class="fas fa-download"></i>
+              Install Now
+            </a>
+          </div>
+
+          <div class="install-card developer">
+            <h3>
+              <i class="fas fa-code" style="color: #4ade80"></i>
+              Developer Mode
+            </h3>
+            <p>Install manually for testing and development purposes.</p>
+            <a
+              href="https://github.com/osmnnl/StorageNinja#installation"
+              class="btn btn-success"
+            >
+              View Instructions
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cross Promotion Section -->
+      <section class="promo-section">
+        <h2>🚀 Diğer Projelerimiz</h2>
+        <div class="promo-card">
+          <div class="promo-logo">
+            <img
+              src="https://raw.githubusercontent.com/osmnnl/TestDataHelper/main/public/icons/icon128.png"
+              alt="Data Helper"
+            />
+            <span>Data Helper</span>
+          </div>
+          <p class="promo-description">
+            Test verilerinizi <strong>ışık hızında</strong> üretin! TCKN, VKN,
+            IBAN, telefon numarası ve daha fazlası için tek tıkla veri üretimi.
+            Sağ tık menüsü ile input'ları otomatik doldurun.
+          </p>
+          <div class="promo-features">
+            <span class="promo-feature">💳 TCKN / VKN</span>
+            <span class="promo-feature">🏦 IBAN</span>
+            <span class="promo-feature">📱 Telefon</span>
+            <span class="promo-feature">👤 Ad Soyad</span>
+            <span class="promo-feature">📧 E-posta</span>
+          </div>
+          <a
+            href="https://chromewebstore.google.com/detail/data-helper/hboimhjgdphpokonjindjhgoihkmboli"
+            target="_blank"
+            class="btn btn-primary"
+          >
+            <i class="fas fa-download"></i>
+            Chrome'a Ekle
+          </a>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="landing-footer">
+        <div class="footer-content">
+          <div class="footer-links">
+            <a href="https://github.com/osmnnl/StorageNinja" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="mailto:osmnnldev@gmail.com" title="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+          <p>
+            Storage<span class="highlight-yellow">Ninja</span> - Chrome
+            Extension
+          </p>
+          <p>
+            Made with ❤️ by
+            <a href="https://github.com/osmnnl" class="text-link">osmnnl</a>
+          </p>
+          <div class="footer-privacy">
+            <a href="privacy-policy.html">Privacy Policy</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
 </html>
