@@ -40,6 +40,21 @@
 
             <!-- Storage Lines Grid -->
             <div class="storage-grid">
+                <!-- Access Token Card -->
+                <div class="storage-line-card glass-card-minimal animate-scale-in token-card" style="animation-delay: 0.02s;">
+                    <div class="storage-line-content">
+                        <span class="storage-line-text">
+                            <i class="fas fa-key" style="color:#FBBF24;"></i> Access Token
+                        </span>
+                        <div class="storage-line-actions">
+                            <button id="token-copy" class="action-btn-mini copy-btn"
+                                title="Copy only the access token (raw, no JSON)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="token-list" class="token-list" style="display: none;"></div>
+                </div>
                 <!-- Local Storage Card -->
                 <div class="storage-line-card glass-card-minimal animate-scale-in" style="animation-delay: 0.05s;">
                     <div class="storage-line-content">

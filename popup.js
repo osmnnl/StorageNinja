@@ -76,6 +76,9 @@ class StorageNinja {
         document.getElementById('cookies-clear').addEventListener('click', () => this.clearStorage('cookies'));
         document.getElementById('cookies-details').addEventListener('click', () => this.showDetailsView('cookies'));
 
+        // Access token
+        document.getElementById('token-copy').addEventListener('click', () => this.copyAccessToken());
+
         // All Clear & Refresh
         document.getElementById('all-clear-refresh').addEventListener('click', () => this.allClearAndRefresh());
 
@@ -562,6 +565,163 @@ class StorageNinja {
                 throw injectionError;
             }
         }
+    }
+
+    // ---- Access token ----
+    // Copies only the raw token. Copying the whole storage as JSON escapes
+    // tokens that live inside JSON strings (e.g. "{\"access_token\":\"eyJ...\"}"),
+    // which makes them hard to read and easy to break when pasted elsewhere.
+
+    async copyAccessToken() {
+        try {
+            const tokens = await this.findAccessTokens();
+            const list = document.getElementById('token-list');
+            if (tokens.length === 0) {
+                list.style.display = 'none';
+                this.showMessage('No access token found on this page', 'info');
+                return;
+            }
+            await navigator.clipboard.writeText(tokens[0].value);
+            this.showMessage(`Token copied: ${tokens[0].source}`, 'success');
+            this.renderTokenList(tokens);
+        } catch (error) {
+            console.error('Token copy error:', error);
+            this.showMessage('Token copy failed', 'error');
+        }
+    }
+
+    renderTokenList(tokens) {
+        const list = document.getElementById('token-list');
+        list.textContent = '';
+        if (tokens.length < 2) {
+            list.style.display = 'none';
+            return;
+        }
+        tokens.slice(0, 6).forEach((t, i) => {
+            const row = document.createElement('button');
+            row.className = 'token-row' + (i === 0 ? ' active' : '');
+            row.title = 'Copy this token';
+            const src = document.createElement('span');
+            src.className = 'token-src';
+            src.textContent = t.source;
+            const meta = document.createElement('span');
+            meta.className = 'token-meta';
+            meta.textContent = t.meta;
+            row.append(src, meta);
+            row.addEventListener('click', async () => {
+                await navigator.clipboard.writeText(t.value);
+                list.querySelectorAll('.token-row').forEach(r => r.classList.remove('active'));
+                row.classList.add('active');
+                this.showMessage(`Token copied: ${t.source}`, 'success');
+            });
+            list.appendChild(row);
+        });
+        list.style.display = 'block';
+    }
+
+    async findAccessTokens() {
+        const sources = [
+            ['localStorage', 'Local'],
+            ['sessionStorage', 'Session'],
+            ['cookies', 'Cookie']
+        ];
+        const found = new Map();
+
+        for (const [type, label] of sources) {
+            const response = await this.sendToContentScript({ action: 'getStorage', storageType: type });
+            if (!response || !response.data) continue;
+            const entries = Array.isArray(response.data)
+                ? response.data.map(c => [c.name, c.value])
+                : Object.entries(response.data);
+            for (const [key, value] of entries) {
+                this.collectTokens(value, [label, key], found, 0);
+            }
+        }
+
+        return [...found.values()].sort((a, b) => b.score - a.score);
+    }
+
+    collectTokens(value, path, found, depth) {
+        if (depth > 8 || value === null || value === undefined) return;
+
+        if (typeof value === 'object') {
+            for (const [k, v] of Object.entries(value)) {
+                this.collectTokens(v, path.concat(k), found, depth + 1);
+            }
+            return;
+        }
+        if (typeof value !== 'string') return;
+
+        let text = value.trim();
+        if (text.includes('%')) {
+            try { text = decodeURIComponent(text); } catch (_) { /* keep raw */ }
+        }
+        text = text.replace(/^Bearer\s+/i, '').replace(/^"+|"+$/g, '');
+
+        // JSON inside a string (possibly several levels deep)
+        if (/^[[{"]/.test(text)) {
+            try {
+                this.collectTokens(JSON.parse(text), path, found, depth + 1);
+                return;
+            } catch (_) { /* not JSON */ }
+        }
+
+        const keyPath = path.slice(1).join(' › ');
+        const lastKey = String(path[path.length - 1]);
+        const payload = this.decodeJwtPayload(text);
+        const isOpaqueAccess = !payload && /access[_-]?token/i.test(lastKey) && /^[\w\-.~+/=]{16,}$/.test(text);
+        if (!payload && !isOpaqueAccess) return;
+        if (found.has(text)) return;
+
+        let score = 0;
+        const now = Date.now() / 1000;
+        const keys = path.join(' ');
+        if (/access/i.test(keys)) score += 50;
+        if (/id[_-]?token/i.test(keys)) score -= 20;
+        if (/refresh/i.test(keys)) score -= 40;
+
+        const meta = [];
+        if (payload) {
+            if (payload.scope || payload.scp || payload.aud) score += 5;
+            if (typeof payload.exp === 'number') {
+                const mins = Math.round((payload.exp - now) / 60);
+                if (mins > 0) { score += 20; meta.push(`expires in ${this.formatMinutes(mins)}`); }
+                else { score -= 30; meta.push(`expired ${this.formatMinutes(-mins)} ago`); }
+            }
+        } else {
+            meta.push('opaque');
+        }
+
+        found.set(text, {
+            value: text,
+            score,
+            source: `${path[0]} › ${keyPath}`,
+            meta: meta.join(' · ') || 'JWT'
+        });
+    }
+
+    decodeJwtPayload(text) {
+        if (!/^[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]*$/.test(text)) return null;
+        try {
+            const decode = part => {
+                const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
+                const json = decodeURIComponent(atob(b64 + '='.repeat((4 - b64.length % 4) % 4))
+                    .split('').map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join(''));
+                return JSON.parse(json);
+            };
+            const [header, payload] = text.split('.');
+            if (!decode(header).alg) return null;
+            const p = decode(payload);
+            return p && typeof p === 'object' ? p : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    formatMinutes(mins) {
+        if (mins < 60) return `${mins} min`;
+        if (mins < 60 * 48) return `${Math.round(mins / 60)} h`;
+        return `${Math.round(mins / 1440)} d`;
     }
 
     getStorageDisplayName(storageType) {
