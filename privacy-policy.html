@@ -35,89 +35,91 @@
             <h1 class="text-3xl font-bold text-gray-800 mb-6">Privacy Policy</h1>
 
             <div class="text-sm text-gray-500 mb-8">
-                <p><strong>Last updated:</strong> July 2025</p>
-                <p><strong>Effective date:</strong> July 2025</p>
+                <p><strong>Last updated:</strong> November 2026 (version 2.0.0)</p>
+                <p><strong>Effective date:</strong> November 2026</p>
             </div>
 
             <div class="prose prose-lg max-w-none">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">1. Introduction</h2>
                 <p class="text-gray-600 mb-6">
                     StorageNinja ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
-                    explains how our Chrome extension handles information when you use our service. StorageNinja is a
-                    browser extension designed to help developers and users manage browser storage data including Local
-                    Storage, Session Storage, and Cookies.
+                    explains how our Chrome extension handles information when you use it. StorageNinja is a
+                    browser extension that helps developers and testers manage the browser storage of the page they are
+                    on: Local Storage, Session Storage, Cookies, IndexedDB and Cache Storage.
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">2. Information We Collect</h2>
 
                 <h3 class="text-xl font-semibold text-gray-700 mb-3 mt-6">2.1 Data We Do NOT Collect</h3>
-                <p class="text-gray-600 mb-4">StorageNinja does NOT collect, store, or transmit any of the following:
+                <p class="text-gray-600 mb-4">StorageNinja does NOT collect, sell or transmit any of the following to us
+                    or to any third party:
                 </p>
                 <ul class="list-disc list-inside text-gray-600 mb-6 space-y-2">
                     <li>Personal information or identifiable data</li>
                     <li>Your browsing history or website visits</li>
-                    <li>Storage data from your browser (Local Storage, Session Storage, Cookies)</li>
-                    <li>Any content or data from websites you visit</li>
+                    <li>Storage data from your browser (Local Storage, Session Storage, Cookies, IndexedDB, Cache Storage)</li>
+                    <li>Authentication information such as access tokens or session cookies</li>
                     <li>Usage analytics or tracking data</li>
                     <li>Device information or system details</li>
                 </ul>
 
-                <h3 class="text-xl font-semibold text-gray-700 mb-3 mt-6">2.2 Local Processing Only</h3>
-                <p class="text-gray-600 mb-6">
-                    All data processing occurs locally on your device. When you use StorageNinja to view, copy, paste,
-                    or modify storage data, these operations happen entirely within your browser. No data leaves your
-                    device or is sent to external servers.
+                <h3 class="text-xl font-semibold text-gray-700 mb-3 mt-6">2.2 Data Handled Locally</h3>
+                <p class="text-gray-600 mb-4">
+                    To do its job, StorageNinja reads and changes data that websites keep in your browser. This data can
+                    include authentication information (for example access tokens and session cookies) and website
+                    content. It is handled only on your device, only for the feature you use, and is never sent to a
+                    server:
                 </p>
+                <ul class="list-disc list-inside text-gray-600 mb-6 space-y-2">
+                    <li><strong>Viewing, editing, copying and pasting</strong> storage data of the current page, and
+                        detecting the page's access token so you can copy it</li>
+                    <li><strong>Clipboard:</strong> data is placed on or read from your clipboard only when you choose
+                        copy or paste</li>
+                    <li><strong>Snapshots:</strong> when you save a snapshot, the site's Local Storage, Session Storage
+                        and cookies are stored in the extension's local storage (<code>chrome.storage.local</code>) on
+                        your device until you delete the snapshot or uninstall the extension</li>
+                    <li><strong>Settings:</strong> your theme and the token source you pinned per site are stored
+                        locally in the same way</li>
+                </ul>
 
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">3. How We Use Information</h2>
                 <p class="text-gray-600 mb-6">
-                    Since we don't collect any information, we don't use, share, or process any personal data.
+                    Since we don't collect any information, we don't use, share, or sell any personal data.
                     StorageNinja operates as a purely local tool that:
                 </p>
                 <ul class="list-disc list-inside text-gray-600 mb-6 space-y-2">
-                    <li>Accesses browser storage APIs only when explicitly requested by the user</li>
+                    <li>Accesses a page's storage only when you open the extension, its DevTools panel, its context
+                        menu or its keyboard shortcut</li>
                     <li>Processes data locally within your browser environment</li>
-                    <li>Does not store any data between sessions</li>
-                    <li>Does not communicate with external servers</li>
+                    <li>Keeps data between sessions only for snapshots and settings you create</li>
+                    <li>Does not communicate with external servers and loads no remote code</li>
                 </ul>
 
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">4. Permissions Explained</h2>
-                <p class="text-gray-600 mb-4">StorageNinja requests the following Chrome permissions for functionality:
+                <p class="text-gray-600 mb-4">StorageNinja requests the following Chrome permissions:
                 </p>
 
                 <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                    <h3 class="font-semibold text-gray-700 mb-3">Required Permissions:</h3>
+                    <h3 class="font-semibold text-gray-700 mb-3">Permissions:</h3>
                     <ul class="space-y-3 text-gray-600">
-                        <li><strong>activeTab:</strong> Access the currently active tab only to read storage data when
-                            the extension popup is opened by the user</li>
-                        <li><strong>storage:</strong> Access Chrome's storage API for extension settings and preferences
-                        </li>
-                        <li><strong>cookies:</strong> Read and modify cookies on the currently active tab only (limited
-                            by activeTab permission)</li>
-                        <li><strong>scripting:</strong> Dynamically inject content scripts into the active tab only when
-                            needed to access Local Storage and Session Storage</li>
-                        <li><strong>clipboardRead:</strong> Read clipboard data for paste functionality</li>
-                        <li><strong>clipboardWrite:</strong> Write storage data to clipboard for copy functionality</li>
+                        <li><strong>Host access to all sites (&lt;all_urls&gt;):</strong> Chrome's cookies API only
+                            works for sites the extension has host access to; temporary activeTab access is not enough
+                            for cookies. StorageNinja uses it only for the page you are using it on.</li>
+                        <li><strong>cookies:</strong> Read, edit and delete the cookies of the current site</li>
+                        <li><strong>scripting:</strong> Run small functions in the current page to read and change its
+                            Local Storage, Session Storage, IndexedDB and Cache Storage</li>
+                        <li><strong>activeTab:</strong> Access the tab you invoke the extension on</li>
+                        <li><strong>contextMenus:</strong> The StorageNinja entry in the page's right-click menu</li>
+                        <li><strong>browsingData:</strong> "Clear all &amp; reload" for the current site only</li>
+                        <li><strong>clipboardRead / clipboardWrite:</strong> Copy and paste when you choose to</li>
+                        <li><strong>offscreen:</strong> Use the clipboard from the context menu and keyboard shortcut</li>
+                        <li><strong>storage / unlimitedStorage:</strong> Keep your snapshots and settings on your device</li>
                     </ul>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p class="text-blue-800 font-semibold mb-2">
-                        <i class="fas fa-shield-alt mr-2"></i>Enhanced Security Approach
-                    </p>
-                    <p class="text-blue-700">
-                        StorageNinja uses <strong>only activeTab permission</strong> - no broad website access
-                        required!
-                        The extension can only access storage data from your currently active tab and only when you
-                        explicitly open the extension popup. This minimal permission approach ensures maximum privacy
-                        and security.
-                    </p>
-                </div>
-
                 <p class="text-gray-600 mb-6">
-                    These permissions are used solely for the extension's core functionality and not for data collection
-                    or tracking purposes. The extension operates with minimal permissions to ensure your privacy and
-                    security.
+                    These permissions are used solely for the extension's user-facing features and never for data
+                    collection, advertising or tracking.
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">5. Data Security</h2>
@@ -185,8 +187,8 @@
                     </p>
                     <p class="text-green-700">
                         StorageNinja operates with a privacy-first approach. We don't collect any data, don't track
-                        users, and don't communicate with external servers. Your browser storage data remains completely
-                        under your control and never leaves your device.
+                        users, and don't communicate with external servers. Your browser storage data, including tokens
+                        and snapshots, stays on your device and under your control.
                     </p>
                 </div>
             </div>

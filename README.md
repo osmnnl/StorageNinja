@@ -24,24 +24,23 @@
 
 ## 📋 Features
 
-- **Local Storage Management**: View, copy, paste, and clear local storage data on a per-page basis
-- **Session Storage Management**: Manage session storage data with full control
-- **Cookie Management**: Manage cookies with detailed attributes
-- **JSON Format**: Copy/paste operations for all data in JSON format
-- **Detailed View**: Manage key-value pairs individually for each storage type
-- **Modern Interface**: User-friendly interface designed with Tailwind CSS
-- **Safe Operations**: Secure data deletion with confirmation prompts
-- **Real-time**: Instant data count display
+- **One-click access token**: Finds the page's JWT or access token in Local Storage, Session Storage or cookies (nested JSON such as OIDC user objects included), shows its subject and expiry, and copies it raw or as `Bearer …`. You can pin the right source per site.
+- **Local & Session Storage**: View, search, edit, copy, paste (merge or replace), import and export as JSON. JSON values are pretty-printed, JWTs are decoded.
+- **Cookies**: Every attribute is kept on copy → paste and edit: `SameSite`, `HttpOnly`, `Secure`, host-only, path, expiry and partitioned (CHIPS) cookies. Cookies pasted from another domain (e.g. production → localhost) are moved onto the current site.
+- **IndexedDB & Cache Storage**: Browse databases, object stores and records; export, clear or delete them. List and delete cached requests.
+- **Snapshots**: Save a site's Local Storage, Session Storage and cookies under a name and restore it later, e.g. to switch between test users.
+- **Right-click menu**: Copy the token, copy or paste any storage, save or restore a snapshot, clear everything, without opening the popup.
+- **Keyboard shortcuts**: `Alt+Shift+S` opens StorageNinja, `Alt+Shift+T` copies the access token (change them at `chrome://extensions/shortcuts`).
+- **DevTools panel**: The same tools in a "StorageNinja" tab inside Chrome DevTools.
+- **iframes**: Pick a frame to see its own Local Storage, Session Storage, IndexedDB and Cache Storage.
+- **Clear all & reload**: Deletes the site's storage, cookies, IndexedDB, Cache Storage, service workers and HTTP cache, then reloads.
+- **Light & dark theme**, follows the system by default.
 
 ## 🚀 Installation
 
 ### Install from Chrome Web Store
 
-🎉 **StorageNinja is now live on Chrome Web Store!**
-
 **[👉 Install StorageNinja](https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp)**
-
-Simply click the link above and hit "Add to Chrome" to install the extension instantly.
 
 ### Manual Installation (Developer Mode)
 
@@ -51,92 +50,69 @@ Simply click the link above and hit "Add to Chrome" to install the extension ins
 
 ## 📖 Usage
 
-### Main Interface
+### Popup
 
-After installing the extension, click the StorageNinja icon in the browser toolbar.
+Click the StorageNinja icon (or press `Alt+Shift+S`):
 
-#### Storage Sections
+- **Access token** card: copy the detected token, or click the source to choose another value and pin it for the site.
+- **Storage** rows: copy 📋, paste 📥 (you choose merge or replace), clear 🗑️ and open details ›.
+- **Snapshots**: *Save current*, then *Restore* whenever you need that state again.
 
-- 🟢 **Local Storage**: Persistent local storage
-- 🟡 **Session Storage**: Session-based storage
-- 🟠 **Cookies**: HTTP cookies
+### Details
 
-#### Main Operations
+- Tabs for Local, Session, Cookies, IndexedDB and Cache.
+- Filter by key or value, click a row to edit it, add new items.
+- Export to / import from a `.json` file. In the popup, import opens the view in a full tab so the file picker does not close it.
 
-Four main operations are available for each storage type:
+### Copy formats
 
-| Icon | Operation   | Description                                 |
-| ---- | ----------- | ------------------------------------------- |
-| 📋   | **Copy**    | Copies all data to clipboard in JSON format |
-| 📥   | **Paste**   | Loads JSON data from clipboard to storage   |
-| 🗑️   | **Clear**   | Deletes all data (asks for confirmation)    |
-| 👁️   | **Details** | Shows key-value pairs in detail             |
+| What | Format |
+| ---- | ------ |
+| Local / Session Storage | `{ "key": "value", ... }` |
+| Cookies | `[{ "name", "value", "domain", "hostOnly", "path", "secure", "httpOnly", "sameSite", "session", "expirationDate", "partitionKey" }]` |
+| Copy all (context menu) | `{ "$storageNinja": 2, "localStorage": {...}, "sessionStorage": {...}, "cookies": [...] }` |
 
-### Detail View
-
-When you click the "Details" button, on the opened page:
-
-- **View all key-value pairs** in a list
-- **Add new items** (key-value)
-- **For each item individually**:
-  - Copy (only that item)
-  - Paste (update that item's value)
-  - Delete (only that item)
+A "copy all" bundle can be pasted into any single storage; the matching part is used. The cookie format of version 1.x is still accepted.
 
 ## ⚙️ Technical Details
 
 ### File Structure
 
 ```
-storage-ninja/
-├── manifest.json          # Extension configuration
-├── popup.html             # Main popup interface
-├── popup.js               # Main popup JavaScript
-├── content.js             # Content script
-├── background.js          # Background service worker
-├── styles.css             # CSS styles
-├── icons/                 # Extension icons
-│   ├── icon16.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md              # This file
+StorageNinja/
+├── manifest.json            # Manifest V3 configuration
+├── background.js            # Service worker: operation router, context menu, shortcuts
+├── popup.html               # Toolbar popup
+├── panel.html               # DevTools panel and full-tab view
+├── devtools.html/.js        # Registers the DevTools panel
+├── offscreen.html/.js       # Clipboard for the context menu and shortcuts
+├── src/core/                # Storage, cookies, IndexedDB, Cache, token detection, snapshots
+├── src/ui/                  # Shared UI (vanilla JS + CSS, inline SVG icons)
+└── icons/
 ```
 
-### Technologies
-
-- **Manifest V3** - Modern Chrome Extension standard
-- **HTML5** - Interface structure
-- **Tailwind CSS** - Style framework
-- **Font Awesome** - Icons
-- **Vanilla JavaScript** - Functionality
-- **Chrome APIs** - Storage, cookies, scripting APIs
+No remote code: there is no CDN, framework or build step. Everything runs from the extension package, as Manifest V3 requires.
 
 ### Permissions
 
-The extension uses the following minimal permissions for enhanced security:
-
-- `activeTab` - Access only the currently active tab (no broad website access)
-- `storage` - Chrome storage API for extension settings
-- `cookies` - Cookie management on active tab only
-- `scripting` - Dynamic script injection into active tab when needed
-- `clipboardRead` - Read clipboard data for paste functionality
-- `clipboardWrite` - Write to clipboard for copy functionality
-
-- `host_permissions` – `<all_urls>`
-  - Required by Chrome Manifest V3 to allow the background service worker to use the `chrome.cookies` API for the URL of the active tab.
-  - Without host permissions, cookie operations (count, list, set, delete) are not available to the extension across sites.
-
-Why this is needed:
-
-- In MV3, the `chrome.cookies` API is not available in content scripts and must be called from the background service worker.
-- The background script needs host permissions to read/write cookies for the domains you interact with. StorageNinja uses these permissions only to operate on the currently active tab’s URL and never sends data anywhere.
+| Permission | Why |
+| ---------- | --- |
+| `host_permissions: <all_urls>` | Chrome's `cookies` API only works for sites the extension has host access to; `activeTab` is not enough for cookies. Used only for the page you work on. |
+| `cookies` | Read, edit and delete the current site's cookies |
+| `scripting` | Read and change the page's Local Storage, Session Storage, IndexedDB and Cache Storage |
+| `activeTab` | Access the tab you invoke the extension on |
+| `contextMenus` | Right-click menu |
+| `browsingData` | "Clear all & reload" for the current site |
+| `clipboardRead`, `clipboardWrite` | Copy and paste |
+| `offscreen` | Clipboard access from the context menu and shortcuts |
+| `storage`, `unlimitedStorage` | Snapshots and settings, stored locally |
 
 ## 🔒 Security
 
-- All data is processed locally only
-- No data is sent to external servers
-- Content script is injected only when necessary
-- Confirmation prompts for sensitive operations
+- All data is processed locally; nothing is sent to any server
+- Snapshots and settings stay in the extension's local storage on your device
+- No remote scripts, no analytics
+- Destructive actions (clear, replace, restore) ask for confirmation
 
 ## 🛠️ Development
 
@@ -153,9 +129,9 @@ Why this is needed:
 
 ### Debug
 
-- View console logs in `Developer Tools > Console`
-- Background script logs via "Inspect" link on extension page
-- Popup debug with `F12` key while popup is open
+- Background logs: "Inspect views: service worker" on `chrome://extensions`
+- In the service worker console every operation can be called directly, e.g. `await storageNinja.runOp('summary', { tabId })`
+- Popup: right-click the popup → Inspect
 
 ## 📝 License
 
