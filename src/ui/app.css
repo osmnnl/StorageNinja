@@ -150,7 +150,7 @@ body.mode-page.view-main #app { max-width: 460px; margin: 0 auto; }
 body.mode-page.view-details #app { height: 100vh; }
 
 #app { display: flex; flex-direction: column; }
-.main { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px 10px; }
+.main { display: flex; flex-direction: column; gap: 8px; padding: 10px 16px 10px; }
 .details { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; height: 100%; min-height: 0; }
 
 /* ---- Generic pieces ---- */
@@ -224,7 +224,7 @@ textarea.input { height: auto; padding: 8px 10px; font-family: var(--mono); font
 .title { font-weight: 700; font-size: 15px; }
 .title span { color: var(--brand); }
 
-.token-card { border: 1px solid var(--token-border); background: var(--token-bg); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.token-card { border: 1px solid var(--token-border); background: var(--token-bg); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; position: relative; }
 .token-card .label { font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--brand-text); }
 .token-value { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; }
 .link-btn { border: none; background: none; padding: 0; color: var(--link); font-size: 12px; display: inline-flex; align-items: center; gap: 2px; max-width: 100%; text-align: left; }
@@ -238,7 +238,7 @@ textarea.input { height: auto; padding: 8px 10px; font-family: var(--mono); font
 .dropdown button:hover, .dropdown button.active { background: var(--selected); }
 
 .store-list { display: flex; flex-direction: column; gap: 4px; }
-.store-row { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 6px 0 12px; }
+.store-row { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 6px 0 12px; }
 .dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
 .store-name { font-weight: 600; flex-grow: 1; }
 .store-count { color: var(--muted); font-size: 12px; min-width: 32px; text-align: right; }
