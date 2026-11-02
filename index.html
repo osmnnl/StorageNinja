@@ -1,1057 +1,353 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StorageNinja - Chrome Extension</title>
-    <meta
-      name="description"
-      content="Storage management tool for Chrome browser - Easily manage Local Storage, Session Storage & Cookies"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --primary: #6366f1;
-        --primary-hover: #4f46e5;
-        --secondary: #a855f7;
-        --accent: #fbbf24;
-        --bg-dark: #020617;
-        --bg-surface: #0f172a;
-        --bg-card: rgba(30, 41, 59, 0.4);
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --border-glass: rgba(255, 255, 255, 0.08);
-        --glow-primary: rgba(99, 102, 241, 0.2);
-        --glow-secondary: rgba(168, 85, 247, 0.15);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        overflow-x: hidden;
-      }
-
-      body {
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-        font-family:
-          "Inter",
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-
-      .landing-container {
-        width: 100%;
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-      }
-
-      /* Background Gradients */
-      .landing-container::before {
-        content: "";
-        position: absolute;
-        top: -10%;
-        left: -5%;
-        width: 60%;
-        height: 60%;
-        background: radial-gradient(
-          circle,
-          var(--glow-primary) 0%,
-          transparent 70%
-        );
-        filter: blur(100px);
-        z-index: -1;
-      }
-
-      .landing-container::after {
-        content: "";
-        position: absolute;
-        top: 40%;
-        right: -10%;
-        width: 50%;
-        height: 50%;
-        background: radial-gradient(
-          circle,
-          var(--glow-secondary) 0%,
-          transparent 70%
-        );
-        filter: blur(120px);
-        z-index: -1;
-      }
-
-      /* Header */
-      .landing-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 80px;
-        background: rgba(2, 6, 23, 0.7);
-        backdrop-filter: blur(16px);
-        z-index: 1000;
-        border-bottom: 1px solid var(--border-glass);
-      }
-
-      .header-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        height: 100%;
-        padding: 0 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-weight: 800;
-        font-size: 1.5rem;
-        letter-spacing: -0.025em;
-        text-decoration: none;
-      }
-
-      .logo-text {
-        background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .logo-accent {
-        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .logo img {
-        width: 36px;
-        height: 36px;
-        filter: drop-shadow(0 0 8px var(--glow-primary));
-      }
-
-      nav {
-        display: flex;
-        gap: 2.5rem;
-      }
-
-      nav a {
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-      }
-
-      nav a::after {
-        content: "";
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--primary);
-        transition: width 0.3s ease;
-      }
-
-      nav a:hover {
-        color: var(--text-main);
-      }
-
-      nav a:hover::after {
-        width: 100%;
-      }
-
-      /* Hero Section */
-      .hero {
-        padding: 180px 2rem 100px;
-        text-align: center;
-        position: relative;
-      }
-
-      .hero-content {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .hero-badge {
-        display: inline-block;
-        padding: 0.5rem 1.25rem;
-        background: rgba(79, 70, 229, 0.1);
-        border: 1px solid rgba(79, 70, 229, 0.3);
-        border-radius: 9999px;
-        color: #a5b4fc;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 2rem;
-        animation: slideDown 0.6s ease-out;
-      }
-
-      .hero h1 {
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 900;
-        line-height: 1.1;
-        margin-bottom: 2rem;
-        letter-spacing: -0.04em;
-        animation: fadeInUp 0.8s ease-out forwards;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .hero h1 img {
-        width: 80px;
-        height: 80px;
-      }
-
-      .highlight {
-        background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-      }
-
-      .highlight-yellow {
-        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-      }
-
-      .hero p {
-        font-size: clamp(1.125rem, 2vw, 1.35rem);
-        color: #94a3b8;
-        margin-bottom: 3.5rem;
-        line-height: 1.6;
-        max-width: 650px;
-        margin-left: auto;
-        margin-right: auto;
-        animation: fadeInUp 1s ease-out forwards;
-      }
-
-      .hero-actions {
-        display: flex;
-        justify-content: center;
-        gap: 1.5rem;
-        animation: fadeInUp 1.2s ease-out forwards;
-      }
-
-      /* Buttons */
-      .btn {
-        padding: 1.125rem 2.5rem;
-        border-radius: 1rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        border: none;
-        font-size: 1.05rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .btn-primary {
-        background: linear-gradient(
-          135deg,
-          var(--primary) 0%,
-          var(--secondary) 100%
-        );
-        color: white;
-        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-4px);
-        filter: brightness(1.1);
-        box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.5);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.05);
-        color: #fff;
-        border: 1px solid var(--border-glass);
-        backdrop-filter: blur(8px);
-      }
-
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transform: translateY(-4px);
-        border-color: rgba(255, 255, 255, 0.2);
-      }
-
-      .btn-accent {
-        background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
-        color: #1a1a1a;
-        box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.4);
-      }
-
-      .btn-accent:hover {
-        transform: translateY(-4px);
-        filter: brightness(1.1);
-        box-shadow: 0 20px 30px -10px rgba(251, 191, 36, 0.5);
-      }
-
-      /* Features Section */
-      .features-grid {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2.5rem;
-        padding: 6rem 2rem;
-      }
-
-      .feature-card {
-        background: var(--bg-card);
-        padding: 3rem;
-        border-radius: 2rem;
-        border: 1px solid var(--border-glass);
-        backdrop-filter: blur(12px);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
-      }
-
-      .feature-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          135deg,
-          rgba(79, 70, 229, 0.05) 0%,
-          transparent 100%
-        );
-        opacity: 0;
-        transition: opacity 0.4s ease;
-      }
-
-      .feature-card:hover {
-        transform: translateY(-10px);
-        border-color: rgba(79, 70, 229, 0.4);
-        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
-      }
-
-      .feature-card:hover::before {
-        opacity: 1;
-      }
-
-      .feature-card .icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 1.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        margin-bottom: 2rem;
-      }
-
-      .feature-card .icon.green {
-        background: rgba(34, 197, 94, 0.15);
-        color: #4ade80;
-      }
-
-      .feature-card .icon.yellow {
-        background: rgba(251, 191, 36, 0.15);
-        color: #fbbf24;
-      }
-
-      .feature-card .icon.pink {
-        background: rgba(236, 72, 153, 0.15);
-        color: #f472b6;
-      }
-
-      .feature-card h3 {
-        font-size: 1.75rem;
-        margin-bottom: 1.25rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-
-      .feature-card p {
-        color: var(--text-muted);
-        line-height: 1.7;
-        font-size: 1.1rem;
-      }
-
-      /* Why Section */
-      .why-section {
-        padding: 100px 2rem;
-        text-align: center;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .why-section h2 {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.04em;
-      }
-
-      .why-section .subtitle {
-        font-size: 1.25rem;
-        color: var(--text-muted);
-        margin-bottom: 4rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .why-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 2.5rem;
-      }
-
-      .why-item {
-        text-align: center;
-      }
-
-      .why-item .icon-circle {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
-        font-size: 1.5rem;
-      }
-
-      .why-item .icon-circle.blue {
-        background: rgba(59, 130, 246, 0.1);
-        color: #60a5fa;
-      }
-
-      .why-item .icon-circle.green {
-        background: rgba(34, 197, 94, 0.1);
-        color: #4ade80;
-      }
-
-      .why-item .icon-circle.purple {
-        background: rgba(168, 85, 247, 0.1);
-        color: #c084fc;
-      }
-
-      .why-item .icon-circle.orange {
-        background: rgba(251, 146, 60, 0.1);
-        color: #fb923c;
-      }
-
-      .why-item h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-      }
-
-      .why-item p {
-        color: var(--text-muted);
-        font-size: 0.95rem;
-        line-height: 1.6;
-      }
-
-      /* Install Section */
-      .install-section {
-        padding: 120px 2rem;
-        background: radial-gradient(
-          circle at center,
-          rgba(79, 70, 229, 0.05) 0%,
-          transparent 70%
-        );
-      }
-
-      .install-section h2 {
-        font-size: 3rem;
-        font-weight: 800;
-        text-align: center;
-        margin-bottom: 4rem;
-        letter-spacing: -0.04em;
-      }
-
-      .install-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-        gap: 3rem;
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-
-      .install-card {
-        padding: 3.5rem;
-        border-radius: 2.5rem;
-        border: 1px solid var(--border-glass);
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(16px);
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.4s ease;
-        box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4);
-      }
-
-      .install-card:hover {
-        transform: translateY(-8px);
-      }
-
-      .install-card.chrome {
-        border-left: 4px solid var(--primary);
-      }
-
-      .install-card.developer {
-        border-left: 4px solid #10b981;
-      }
-
-      .install-card h3 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .install-card h3 i {
-        font-size: 1.5rem;
-      }
-
-      .install-card p {
-        color: var(--text-muted);
-        font-size: 1.15rem;
-        line-height: 1.6;
-        margin-bottom: 3rem;
-        flex-grow: 1;
-      }
-
-      .btn-success {
-        background: #10b981;
-        color: white;
-        box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
-      }
-
-      .btn-success:hover {
-        background: #059669;
-        transform: translateY(-4px);
-        box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.4);
-      }
-
-      /* Cross Promotion Section */
-      .promo-section {
-        padding: 100px 2rem;
-        text-align: center;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .promo-section h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 3rem;
-        letter-spacing: -0.04em;
-      }
-
-      .promo-card {
-        background: var(--bg-card);
-        padding: 3rem;
-        border-radius: 2.5rem;
-        border: 1px solid var(--border-glass);
-        backdrop-filter: blur(12px);
-        transition: all 0.4s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-      }
-
-      .promo-card:hover {
-        transform: translateY(-8px);
-        border-color: rgba(79, 70, 229, 0.4);
-        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
-      }
-
-      .promo-card .promo-logo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        font-size: 2rem;
-        font-weight: 800;
-      }
-
-      .promo-card .promo-logo img {
-        width: 56px;
-        height: 56px;
-        border-radius: 1rem;
-      }
-
-      .promo-card .promo-description {
-        color: var(--text-muted);
-        font-size: 1.15rem;
-        line-height: 1.7;
-        max-width: 600px;
-      }
-
-      .promo-features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        margin: 1rem 0;
-      }
-
-      .promo-feature {
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.3);
-        padding: 0.5rem 1rem;
-        border-radius: 9999px;
-        color: #a5b4fc;
-        font-size: 0.9rem;
-        font-weight: 600;
-      }
-
-      .promo-actions {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      /* Footer */
-      .landing-footer {
-        padding: 6rem 2rem 4rem;
-        text-align: center;
-        border-top: 1px solid var(--border-glass);
-      }
-
-      .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .footer-links {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-bottom: 2rem;
-      }
-
-      .footer-links a {
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 1.5rem;
-        transition: all 0.3s ease;
-      }
-
-      .footer-links a:hover {
-        color: var(--text-main);
-        transform: translateY(-2px);
-      }
-
-      .footer-content p {
-        color: var(--text-muted);
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .footer-content a.text-link {
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s ease;
-      }
-
-      .footer-content a.text-link:hover {
-        color: #fff;
-      }
-
-      .footer-privacy {
-        margin-top: 1.5rem;
-      }
-
-      .footer-privacy a {
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-      }
-
-      .footer-privacy a:hover {
-        color: var(--text-main);
-      }
-
-      /* Animations */
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Mobile Fixes */
-      @media (max-width: 768px) {
-        .header-content {
-          padding: 0 1.5rem;
-        }
-
-        nav {
-          display: none;
-        }
-
-        .hero {
-          padding-top: 140px;
-        }
-
-        .hero-actions {
-          flex-direction: column;
-          padding: 0 2rem;
-        }
-
-        .btn {
-          justify-content: center;
-          padding: 1rem 2rem;
-          width: 100%;
-        }
-
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-
-        .features-grid {
-          grid-template-columns: 1fr;
-          padding: 4rem 1.5rem;
-        }
-
-        .install-cards {
-          grid-template-columns: 1fr;
-        }
-
-        .install-card {
-          padding: 2.5rem;
-        }
-
-        .why-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .promo-card {
-          padding: 2rem;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="landing-container">
-      <!-- Header -->
-      <header class="landing-header">
-        <div class="header-content">
-          <a href="#" class="logo">
-            <img src="icons/icon.png" alt="StorageNinja" />
-            <span class="logo-text">Storage</span
-            ><span class="logo-accent">Ninja</span>
-          </a>
-          <nav>
-            <a href="#features">Features</a>
-            <a href="#install">Install</a>
-            <a href="privacy-policy.html">Privacy</a>
-            <a href="https://github.com/osmnnl/StorageNinja" target="_blank"
-              >GitHub</a
-            >
-          </nav>
-        </div>
-      </header>
-
-      <!-- Hero Section -->
-      <section class="hero">
-        <div class="hero-content">
-          <div class="hero-badge">🎉 Chrome Web Store'da Yayında!</div>
-          <h1>
-            <img src="icons/icon.png" alt="StorageNinja" />
-            <span>Storage<span class="highlight-yellow">Ninja</span></span>
-          </h1>
-          <p>
-            Powerful Chrome extension to manage <strong>Local Storage</strong>,
-            <strong>Session Storage</strong>, and <strong>Cookies</strong> with
-            ease
-          </p>
-          <div class="hero-actions">
-            <a
-              href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
-              target="_blank"
-              class="btn btn-accent"
-            >
-              <i class="fas fa-download"></i>
-              <span>Install Extension</span>
-            </a>
-            <a
-              href="https://github.com/osmnnl/StorageNinja"
-              class="btn btn-secondary"
-            >
-              <i class="fab fa-github"></i>
-              <span>View on GitHub</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section id="features" class="features-grid">
-        <div class="feature-card">
-          <div class="icon green">
-            <i class="fas fa-hard-drive"></i>
-          </div>
-          <h3>Local Storage</h3>
-          <p>
-            View, copy, paste, and manage persistent local storage data on any
-            website
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="icon yellow">
-            <i class="fas fa-clock"></i>
-          </div>
-          <h3>Session Storage</h3>
-          <p>
-            Manage session-based storage data with full control and JSON support
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="icon pink">
-            <i class="fas fa-cookie-bite"></i>
-          </div>
-          <h3>Cookies</h3>
-          <p>
-            Edit cookies with every attribute kept: SameSite, HttpOnly, host-only and partitioned (CHIPS)
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="icon green">
-            <i class="fas fa-key"></i>
-          </div>
-          <h3>One-click Access Token</h3>
-          <p>
-            Finds the page's JWT or access token, shows who it belongs to and when it expires, copies it raw or as Bearer
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="icon yellow">
-            <i class="fas fa-camera"></i>
-          </div>
-          <h3>Snapshots</h3>
-          <p>
-            Save a site's storage and cookies, restore it later: switch between test users in one click
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="icon pink">
-            <i class="fas fa-database"></i>
-          </div>
-          <h3>IndexedDB, Cache &amp; DevTools</h3>
-          <p>
-            Inspect IndexedDB and Cache Storage, work from a DevTools panel or the page's right-click menu
-          </p>
-        </div>
-      </section>
-
-      <!-- Why Section -->
-      <section class="why-section">
-        <h2>Why Choose StorageNinja?</h2>
-        <p class="subtitle">
-          A comprehensive solution for developers and power users to manage
-          browser storage efficiently
-        </p>
-        <div class="why-grid">
-          <div class="why-item">
-            <div class="icon-circle blue">
-              <i class="fas fa-copy"></i>
-            </div>
-            <h3>JSON Support</h3>
-            <p>
-              Copy and paste data in JSON format between different storage types
-            </p>
-          </div>
-          <div class="why-item">
-            <div class="icon-circle green">
-              <i class="fas fa-shield-alt"></i>
-            </div>
-            <h3>Safe Operations</h3>
-            <p>Confirmation dialogs and secure handling of sensitive data</p>
-          </div>
-          <div class="why-item">
-            <div class="icon-circle purple">
-              <i class="fas fa-eye"></i>
-            </div>
-            <h3>Detailed View</h3>
-            <p>Individual key-value management with editing capabilities</p>
-          </div>
-          <div class="why-item">
-            <div class="icon-circle orange">
-              <i class="fas fa-rocket"></i>
-            </div>
-            <h3>Modern UI</h3>
-            <p>Clean, intuitive interface with premium design</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Installation Section -->
-      <section id="install" class="install-section">
-        <h2>Easy Installation</h2>
-        <div class="install-cards">
-          <div class="install-card chrome">
-            <h3>
-              <i class="fab fa-chrome" style="color: #60a5fa"></i>
-              Chrome Web Store
-            </h3>
-            <p>
-              🎉 StorageNinja is now live! Install directly from Chrome Web
-              Store with just one click.
-            </p>
-            <a
-              href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp"
-              target="_blank"
-              class="btn btn-primary"
-            >
-              <i class="fas fa-download"></i>
-              Install Now
-            </a>
-          </div>
-
-          <div class="install-card developer">
-            <h3>
-              <i class="fas fa-code" style="color: #4ade80"></i>
-              Developer Mode
-            </h3>
-            <p>Install manually for testing and development purposes.</p>
-            <a
-              href="https://github.com/osmnnl/StorageNinja#installation"
-              class="btn btn-success"
-            >
-              View Instructions
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Cross Promotion Section -->
-      <section class="promo-section">
-        <h2>🚀 Diğer Projelerimiz</h2>
-        <div class="promo-card">
-          <div class="promo-logo">
-            <img
-              src="https://raw.githubusercontent.com/osmnnl/TestDataHelper/main/public/icons/icon128.png"
-              alt="Data Helper"
-            />
-            <span>Data Helper</span>
-          </div>
-          <p class="promo-description">
-            Test verilerinizi <strong>ışık hızında</strong> üretin! TCKN, VKN,
-            IBAN, telefon numarası ve daha fazlası için tek tıkla veri üretimi.
-            Sağ tık menüsü ile input'ları otomatik doldurun.
-          </p>
-          <div class="promo-features">
-            <span class="promo-feature">💳 TCKN / VKN</span>
-            <span class="promo-feature">🏦 IBAN</span>
-            <span class="promo-feature">📱 Telefon</span>
-            <span class="promo-feature">👤 Ad Soyad</span>
-            <span class="promo-feature">📧 E-posta</span>
-          </div>
-          <div class="promo-actions">
-            <a
-              href="https://chromewebstore.google.com/detail/data-helper/hboimhjgdphpokonjindjhgoihkmboli"
-              target="_blank"
-              class="btn btn-primary"
-            >
-              <i class="fas fa-download"></i>
-              Chrome'a Ekle
-            </a>
-            <a
-              href="https://osmnnl.github.io/TestDataHelper/"
-              target="_blank"
-              class="btn btn-secondary"
-            >
-              <i class="fas fa-globe"></i>
-              Siteyi Ziyaret Et
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="landing-footer">
-        <div class="footer-content">
-          <div class="footer-links">
-            <a href="https://github.com/osmnnl/StorageNinja" title="GitHub">
-              <i class="fab fa-github"></i>
-            </a>
-            <a href="mailto:osmnnldev@gmail.com" title="Email">
-              <i class="fas fa-envelope"></i>
-            </a>
-          </div>
-          <p>
-            Storage<span class="highlight-yellow">Ninja</span> - Chrome
-            Extension
-          </p>
-          <p>
-            Made with ❤️ by
-            <a href="https://github.com/osmnnl" class="text-link">osmnnl</a>
-          </p>
-          <div class="footer-privacy">
-            <a href="privacy-policy.html">Privacy Policy</a>
-          </div>
-        </div>
-      </footer>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StorageNinja · Chrome extension for web storage and access tokens</title>
+<meta name="description" content="Copy the access token in one click. Copy, paste and edit Local Storage, Session Storage, Cookies, IndexedDB and Cache Storage. Snapshots, right-click menu and a DevTools panel.">
+<meta property="og:title" content="StorageNinja">
+<meta property="og:description" content="Copy the access token in one click. Local Storage, Session Storage, Cookies, IndexedDB and Cache Storage for developers.">
+<meta property="og:image" content="https://osmnnl.github.io/StorageNinja/site/img/main-light.png">
+<link rel="icon" href="icons/icon48.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a left-aligned reading column with real screenshots set beside the text; flat surfaces, hairlines and one highlighter yellow */
+:root {
+  --paper: #f6f7f5;
+  --surface: #ffffff;
+  --ink: #121417;
+  --muted: #5a626c;
+  --line: #e1e4e6;
+  --marker: #f3c642;
+  --marker-ink: #5c4300;
+  --ok: #17704a;
+  --ok-bg: #e3f3ea;
+  --shadow: 0 1px 2px rgba(18, 20, 23, .06), 0 12px 32px rgba(18, 20, 23, .08);
+  --sans: "Schibsted Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #101215;
+    --surface: #171a1e;
+    --ink: #eceef0;
+    --muted: #9aa2ac;
+    --line: #2a2e34;
+    --marker: #f3c642;
+    --marker-ink: #f3c642;
+    --ok: #5cc690;
+    --ok-bg: #16301f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--sans); }
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--marker); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+/* Top bar */
+.top { border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+.brand img { width: 28px; height: 28px; }
+.top nav { display: flex; gap: 22px; font-size: 15px; color: var(--muted); }
+.top nav a { text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: 8px; font: 600 16px var(--sans); text-decoration: none; border: 1px solid var(--ink); cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary:hover { background: transparent; color: var(--ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--ink); }
+.btn svg { width: 18px; height: 18px; }
+
+/* Hero */
+.hero { padding-block: 72px 56px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 56px; align-items: center; }
+.eyebrow { font: 500 13px var(--mono); color: var(--muted); letter-spacing: .04em; }
+h1 { font-size: clamp(40px, 5.4vw, 66px); line-height: 1.02; letter-spacing: -.025em; margin: 14px 0 22px; font-weight: 800; text-wrap: balance; }
+.mark { text-decoration: underline; text-decoration-color: var(--marker); text-decoration-thickness: .3em; text-underline-offset: -.12em; text-decoration-skip-ink: none; }
+.lede { font-size: 20px; color: var(--muted); max-width: 34ch; margin: 0 0 28px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.meta { margin-top: 18px; font-size: 14px; color: var(--muted); }
+
+/* The token strip: the one thing this tool is for */
+.token { margin-top: 40px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 14px 14px 14px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; max-width: 560px; }
+.token .src { font: 500 12px var(--mono); color: var(--muted); }
+.token code { font: 14px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.chip { font: 600 12px var(--sans); color: var(--ok); background: var(--ok-bg); border-radius: 99px; padding: 3px 9px; white-space: nowrap; justify-self: end; }
+.token button { grid-row: 2; grid-column: 2; height: 34px; padding: 0 14px; border-radius: 6px; border: 0; background: var(--marker); color: #1d1600; font: 700 14px var(--sans); cursor: pointer; }
+
+.shot { border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); background: var(--surface); }
+.hero-shot { justify-self: center; width: min(360px, 100%); }
+
+/* Sections */
+section { padding-block: 72px; border-top: 1px solid var(--line); }
+h2 { font-size: clamp(30px, 3.6vw, 42px); line-height: 1.1; letter-spacing: -.02em; margin: 0 0 16px; font-weight: 800; text-wrap: balance; }
+h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.split.flip > :first-child { order: 2; }
+.intro { color: var(--muted); font-size: 18px; max-width: 46ch; margin: 0 0 28px; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+.list li { display: grid; gap: 2px; padding-left: 18px; border-left: 2px solid var(--line); }
+.list li p { margin: 0; color: var(--muted); font-size: 16px; }
+kbd { font: 500 13px var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: var(--surface); white-space: nowrap; }
+
+/* Context menu, drawn in HTML because it is Chrome's own menu */
+.menu { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 6px 0; font-size: 14px; max-width: 380px; justify-self: center; width: 100%; }
+.menu .row { display: flex; justify-content: space-between; gap: 16px; padding: 7px 16px; }
+.menu .row:hover { background: var(--paper); }
+.menu .head { font-weight: 700; }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 5px 0; }
+.menu .row span:last-child { color: var(--muted); font: 12px var(--mono); }
+
+/* Details tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.tabs button { font: 600 15px var(--sans); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 14px; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--ink); }
+.panel-caption { color: var(--muted); font-size: 16px; margin: 14px 0 0; max-width: 70ch; }
+
+.pair { display: flex; gap: 20px; align-items: flex-start; }
+.pair img { width: calc(50% - 10px); }
+
+/* Privacy */
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 8px; }
+.facts div { border-top: 2px solid var(--ink); padding-top: 14px; }
+.facts p { margin: 0; color: var(--muted); font-size: 16px; }
+.perm { margin-top: 44px; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 15px; }
+th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+td:first-child { font: 13px var(--mono); white-space: nowrap; }
+td:last-child { color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+
+/* Install + promo */
+.install { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; }
+.install p { margin: 0; color: var(--muted); font-size: 18px; max-width: 48ch; }
+.promo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--surface); }
+.promo img { width: 56px; height: 56px; }
+.promo p { margin: 0; color: var(--muted); font-size: 16px; }
+.promo .links { display: flex; gap: 10px; flex-wrap: wrap; }
+.promo .btn { height: 40px; font-size: 15px; padding: 0 16px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var(--muted); font-size: 15px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
+footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+@media (max-width: 880px) {
+  .hero .wrap, .split, .install { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .split.flip > :first-child { order: 0; }
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .promo { grid-template-columns: auto minmax(0, 1fr); }
+  .promo .links { grid-column: 1 / -1; }
+  .top nav a:not(:last-child) { display: none; }
+  section { padding-block: 56px; }
+  .hero { padding-block: 44px 40px; }
+}
+@media (max-width: 520px) {
+  .pair { flex-direction: column; }
+  .pair img { width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) { .btn, .tabs button { transition: background .15s, color .15s, border-color .15s; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="icons/icon48.png" alt="" width="28" height="28">StorageNinja</a>
+    <nav aria-label="Main">
+      <a href="#popup">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/osmnnl/StorageNinja">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Chrome extension · v2.0.0 · free and open source</div>
+      <h1>Copy the <span class="mark">access token</span> in one click.</h1>
+      <p class="lede">Then copy, paste and edit everything else the page keeps: Local Storage, Session Storage, Cookies, IndexedDB and Cache Storage.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
+          Add to Chrome
+        </a>
+        <a class="btn ghost" href="https://github.com/osmnnl/StorageNinja">View source</a>
+      </div>
+      <p class="meta">Runs locally. No account, no server, no tracking.</p>
+
+      <div class="token" aria-label="Example of the access token card">
+        <span class="src">localStorage › auth.accessToken</span>
+        <span class="chip">JWT · 23 min left</span>
+        <code id="sample-token">eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.example</code>
+        <button type="button" id="copy-sample">Copy token</button>
+      </div>
     </div>
-  </body>
+    <picture>
+      <source srcset="site/img/main-dark.png" media="(prefers-color-scheme: dark)">
+      <img class="shot hero-shot" src="site/img/main-light.png" width="360" height="600" alt="StorageNinja popup with the access token card, five storage rows and saved snapshots">
+    </picture>
+  </div>
+</div>
+
+<section id="popup">
+  <div class="wrap split">
+    <div>
+      <h2>Everything for the page you are on, in one popup.</h2>
+      <p class="intro">Open it with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>. Each storage type has copy, paste, clear and details.</p>
+      <ul class="list">
+        <li><h3>Finds the right token</h3><p>Looks through Local Storage, Session Storage and cookies, including tokens nested inside JSON. Refresh tokens and expired tokens are skipped. Pin a different source per site if you need to.</p></li>
+        <li><h3>Raw or Bearer</h3><p>Copy the token as it is, or as <code>Bearer &lt;token&gt;</code> for an Authorization header.</p></li>
+        <li><h3>Merge or Replace</h3><p>Pasting asks whether to keep existing keys or delete them first.</p></li>
+        <li><h3>Snapshots</h3><p>Save a site's storage and cookies, then switch back with one click. Handy for moving between test users.</p></li>
+      </ul>
+    </div>
+    <div class="pair">
+      <img class="shot" src="site/img/token-menu.png" width="360" height="600" alt="Token source menu listing three JWTs found on the page">
+      <img class="shot" src="site/img/paste-dialog.png" width="360" height="600" alt="Paste dialog asking Merge or Replace">
+    </div>
+  </div>
+</section>
+
+<section id="menu">
+  <div class="wrap split flip">
+    <div>
+      <h2>Right-click instead of opening anything.</h2>
+      <p class="intro">The most common actions sit in the page's context menu. A short message on the page confirms what happened; clearing and restoring ask first.</p>
+      <ul class="list">
+        <li><h3><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd></h3><p>Copies the access token from anywhere on the page.</p></li>
+        <li><h3>Paste from production into localhost</h3><p>Cookies copied from another domain are set on the current site, so a session can move between environments.</p></li>
+      </ul>
+    </div>
+    <div class="menu" role="img" aria-label="StorageNinja right-click menu">
+      <div class="row head"><span>StorageNinja</span><span>›</span></div>
+      <hr>
+      <div class="row"><span>Copy access token</span><span>Alt+Shift+T</span></div>
+      <div class="row"><span>Copy access token as Bearer</span><span></span></div>
+      <hr>
+      <div class="row"><span>Copy Local Storage (JSON)</span><span></span></div>
+      <div class="row"><span>Copy Session Storage (JSON)</span><span></span></div>
+      <div class="row"><span>Copy Cookies (JSON)</span><span></span></div>
+      <div class="row"><span>Copy all as one JSON</span><span></span></div>
+      <hr>
+      <div class="row"><span>Paste into Local Storage</span><span>merge</span></div>
+      <div class="row"><span>Paste into Session Storage</span><span>merge</span></div>
+      <div class="row"><span>Paste cookies</span><span>merge</span></div>
+      <hr>
+      <div class="row"><span>Save snapshot</span><span></span></div>
+      <div class="row"><span>Restore latest snapshot</span><span></span></div>
+      <hr>
+      <div class="row"><span>Clear all &amp; reload</span><span></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="details">
+  <div class="wrap">
+    <h2>A details view that shows what is really stored.</h2>
+    <p class="intro">Search, edit and delete keys. JWTs are decoded with their expiry. JSON is formatted. Pick an iframe to see its storage too.</p>
+    <div class="tabs" role="tablist" aria-label="Details view">
+      <button type="button" role="tab" id="tab-local" aria-selected="true" data-img="site/img/details-local.png" data-alt="Local Storage table with a decoded JWT in the editor" data-caption="Local and Session Storage: values as text or JSON, JWTs decoded with exp and iat, Copy as Bearer, Pin as access token.">Local Storage</button>
+      <button type="button" role="tab" id="tab-cookies" aria-selected="false" data-img="site/img/details-cookies.png" data-alt="Cookie table with the cookie editor open" data-caption="Cookies through the Chrome cookies API, so HttpOnly, Secure, SameSite and Partitioned cookies all show up and can be edited.">Cookies</button>
+      <button type="button" role="tab" id="tab-idb" aria-selected="false" data-img="site/img/details-idb.png" data-alt="IndexedDB database with object stores and records" data-caption="IndexedDB databases, object stores and records, with export and delete. Cache Storage lists every cached request.">IndexedDB</button>
+      <button type="button" role="tab" id="tab-devtools" aria-selected="false" data-img="site/img/panel-cookies.png" data-alt="StorageNinja tab inside Chrome DevTools" data-caption="The same view as a StorageNinja tab in Chrome DevTools. It refreshes when the page navigates.">DevTools panel</button>
+    </div>
+    <img id="details-img" class="shot" src="site/img/details-local.png" width="780" height="600" alt="Local Storage table with a decoded JWT in the editor">
+    <p class="panel-caption" id="details-caption">Local and Session Storage: values as text or JSON, JWTs decoded with exp and iat, Copy as Bearer, Pin as access token.</p>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <h2>Your tokens stay in your browser.</h2>
+    <div class="facts">
+      <div><h3>No server</h3><p>StorageNinja has no backend, no analytics and no account. Nothing is sent anywhere.</p></div>
+      <div><h3>No remote code</h3><p>All code ships inside the extension. Nothing is downloaded at runtime.</p></div>
+      <div><h3>You decide what leaves</h3><p>Data leaves the extension only when you copy it or export a file. Snapshots are kept in Chrome's local extension storage.</p></div>
+    </div>
+    <div class="perm">
+      <table>
+        <thead><tr><th>Permission</th><th>Why it is needed</th></tr></thead>
+        <tbody>
+          <tr><td>cookies, &lt;all_urls&gt;</td><td>Chrome only allows reading HttpOnly and Partitioned cookies with host access. Data is read only when you use the extension.</td></tr>
+          <tr><td>activeTab, scripting</td><td>Read and write Local Storage, Session Storage, IndexedDB and Cache Storage of the current tab.</td></tr>
+          <tr><td>storage, unlimitedStorage</td><td>Settings, pinned token sources and snapshots, on your computer only.</td></tr>
+          <tr><td>contextMenus</td><td>The right-click menu.</td></tr>
+          <tr><td>clipboardRead, clipboardWrite, offscreen</td><td>Copy and paste from the right-click menu and the keyboard shortcut.</td></tr>
+          <tr><td>browsingData</td><td>Clear all &amp; reload removes the site's service workers and remaining data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap" style="display:grid;gap:40px">
+    <div class="install">
+      <div>
+        <h2>Install StorageNinja</h2>
+        <p>Free on the Chrome Web Store. Works in Chrome, Edge, Brave and other Chromium browsers (version 116 or later).</p>
+      </div>
+      <a class="btn primary" href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp">Add to Chrome</a>
+    </div>
+    <div class="promo">
+      <img src="https://raw.githubusercontent.com/osmnnl/TestDataHelper/main/public/icons/icon128.png" alt="" width="56" height="56">
+      <div>
+        <h3>Also from me: Data Helper</h3>
+        <p>Generate test data in one click: Turkish ID numbers (TCKN, VKN), IBAN, phone numbers, names and email addresses. Fill inputs from the right-click menu.</p>
+      </div>
+      <div class="links">
+        <a class="btn ghost" href="https://chromewebstore.google.com/detail/data-helper/hboimhjgdphpokonjindjhgoihkmboli">Add to Chrome</a>
+        <a class="btn ghost" href="https://osmnnl.github.io/TestDataHelper/">Website</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>StorageNinja by <a href="https://github.com/osmnnl">osmnnl</a> · osmnnldev@gmail.com</span>
+    <nav aria-label="Footer">
+      <a href="privacy-policy.html">Privacy policy</a>
+      <a href="https://github.com/osmnnl/StorageNinja">GitHub</a>
+      <a href="https://github.com/osmnnl/StorageNinja/issues">Report an issue</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+document.getElementById('copy-sample').addEventListener('click', function () {
+  var btn = this, text = document.getElementById('sample-token').textContent;
+  var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy token'; }, 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {}); else done();
+});
+var tabs = document.querySelectorAll('.tabs button');
+tabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+    var img = document.getElementById('details-img');
+    img.src = tab.dataset.img; img.alt = tab.dataset.alt;
+    img.width = tab.dataset.img.indexOf('panel') > -1 ? 1100 : 780;
+    img.height = tab.dataset.img.indexOf('panel') > -1 ? 450 : 600;
+    document.getElementById('details-caption').textContent = tab.dataset.caption;
+  });
+});
+</script>
+</body>
 </html>
