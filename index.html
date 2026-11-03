@@ -130,14 +130,18 @@ td:first-child { font: 13px var(--mono); white-space: nowrap; }
 td:last-child { color: var(--muted); }
 tr:last-child td { border-bottom: 0; }
 
-/* Install + promo */
+/* Install + family */
 .install { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; }
 .install p { margin: 0; color: var(--muted); font-size: 18px; max-width: 48ch; }
-.promo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--surface); }
-.promo img { width: 56px; height: 56px; }
-.promo p { margin: 0; color: var(--muted); font-size: 16px; }
-.promo .links { display: flex; gap: 10px; flex-wrap: wrap; }
-.promo .btn { height: 40px; font-size: 15px; padding: 0 16px; }
+.family .eyebrow { margin-bottom: 20px; }
+.family-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.fam { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.fam img { width: 48px; height: 48px; border-radius: 10px; }
+.fam h3 { margin: 0; font-size: 18px; }
+.fam p { margin: 6px 0 0; color: var(--muted); font-size: 16px; }
+.fam .links { grid-column: 2; display: flex; flex-wrap: wrap; gap: 18px; font-size: 15px; font-weight: 600; }
+.fam .links a { text-decoration: underline; text-decoration-color: var(--marker); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.fam .links a:hover { text-decoration-thickness: 4px; }
 
 footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var(--muted); font-size: 15px; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
@@ -149,8 +153,7 @@ footer a:hover { color: var(--ink); }
   .hero .wrap, .split, .install { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .split.flip > :first-child { order: 0; }
   .facts { grid-template-columns: minmax(0, 1fr); }
-  .promo { grid-template-columns: auto minmax(0, 1fr); }
-  .promo .links { grid-column: 1 / -1; }
+  .family-grid { grid-template-columns: minmax(0, 1fr); }
   .top nav a:not(:last-child) { display: none; }
   section { padding-block: 56px; }
   .hero { padding-block: 44px 40px; }
@@ -183,7 +186,7 @@ footer a:hover { color: var(--ink); }
       <h1>Copy the <span class="mark">access token</span> in one click.</h1>
       <p class="lede">Then copy, paste and edit everything else the page keeps: Local Storage, Session Storage, Cookies, IndexedDB and Cache Storage.</p>
       <div class="cta">
-        <a class="btn primary" href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp">
+        <a class="btn primary" href="https://chromewebstore.google.com/detail/storageninja/kenpefhgbcjkofomcfajmhmilhkfdedp">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
           Add to Chrome
         </a>
@@ -297,24 +300,43 @@ footer a:hover { color: var(--ink); }
 </section>
 
 <section id="install">
-  <div class="wrap" style="display:grid;gap:40px">
+  <div class="wrap">
     <div class="install">
       <div>
         <h2>Install StorageNinja</h2>
         <p>Free on the Chrome Web Store. Works in Chrome, Edge, Brave and other Chromium browsers (version 116 or later).</p>
       </div>
-      <a class="btn primary" href="https://chromewebstore.google.com/detail/storage-ninja/kenpefhgbcjkofomcfajmhmilhkfdedp">Add to Chrome</a>
+      <a class="btn primary" href="https://chromewebstore.google.com/detail/storageninja/kenpefhgbcjkofomcfajmhmilhkfdedp">Add to Chrome</a>
     </div>
-    <div class="promo">
-      <img src="https://raw.githubusercontent.com/osmnnl/TestDataHelper/main/public/icons/icon128.png" alt="" width="56" height="56">
-      <div>
-        <h3>Also from me: Data Helper</h3>
-        <p>Generate test data in one click: Turkish ID numbers (TCKN, VKN), IBAN, phone numbers, names and email addresses. Fill inputs from the right-click menu.</p>
-      </div>
-      <div class="links">
-        <a class="btn ghost" href="https://chromewebstore.google.com/detail/data-helper/hboimhjgdphpokonjindjhgoihkmboli">Add to Chrome</a>
-        <a class="btn ghost" href="https://osmnnl.github.io/TestDataHelper/">Website</a>
-      </div>
+  </div>
+</section>
+
+<section id="family" class="family">
+  <div class="wrap">
+    <div class="eyebrow">More from the same developer</div>
+    <div class="family-grid">
+      <article class="fam">
+        <img src="site/img/family/datahelper.png" alt="" width="48" height="48">
+        <div>
+          <h3>Data Helper</h3>
+          <p>Valid Turkish test data (TCKN, VKN, IBAN) and one-click form filling, with preview, undo and CSV / XLSX export.</p>
+        </div>
+        <div class="links">
+          <a href="https://chromewebstore.google.com/detail/hboimhjgdphpokonjindjhgoihkmboli">Chrome Web Store</a>
+          <a href="https://osmnnl.github.io/TestDataHelper/">Website</a>
+        </div>
+      </article>
+      <article class="fam">
+        <img src="site/img/family/hindsight.png" alt="" width="48" height="48">
+        <div>
+          <h3>Hindsight</h3>
+          <p>Records network requests, console errors and clicks in the background, so a bug report has everything when something breaks.</p>
+        </div>
+        <div class="links">
+          <a href="https://chromewebstore.google.com/detail/hindsight/gmbaaeehmboadpgiekadalnnecjckelp">Chrome Web Store</a>
+          <a href="https://osmnnl.github.io/hindsight/">Website</a>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -327,6 +349,8 @@ footer a:hover { color: var(--ink); }
       <a href="privacy-policy.html">Privacy policy</a>
       <a href="https://github.com/osmnnl/StorageNinja">GitHub</a>
       <a href="https://github.com/osmnnl/StorageNinja/issues">Report an issue</a>
+      <a href="https://osmnnl.github.io/TestDataHelper/">Data Helper</a>
+      <a href="https://osmnnl.github.io/hindsight/">Hindsight</a>
     </nav>
   </div>
 </footer>
